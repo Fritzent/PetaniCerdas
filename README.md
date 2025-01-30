@@ -38,3 +38,10 @@ Calendar :
 Settings :
 
 ![Project Screenshot](assets/readme/settings_features.png)
+
+
+# Notes 
+
+Feel free to fork it. hope can help every one to study flutter.
+
+will be updated for the next features update
