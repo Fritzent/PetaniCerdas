@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "34550127930",
+    "project_id": "petanicerdas-8101f",
+    "storage_bucket": "petanicerdas-8101f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:34550127930:android:8515ecf1ff4c00caf24403",
+        "android_client_info": {
+          "package_name": "com.example.petani_cerdas"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0XgdNLup3ph_WGZf-rY7U1Mk-gJW3GQ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
+
