@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 import 'package:petani_cerdas/bloc/add_transactions_bloc.dart';
+import 'package:petani_cerdas/widgets/custom_toast.dart';
 import 'package:petani_cerdas/widgets/custome_text_field_with_double_form.dart';
 import 'package:petani_cerdas/widgets/custome_text_field_with_title.dart';
 
@@ -24,73 +24,15 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   FocusNode nameFocusNode = FocusNode();
   FocusNode noteFocusNode = FocusNode();
   FocusNode dateFocusNode = FocusNode();
-
   final nameBloc = AddTransactionsBloc();
   final noteBloc = AddTransactionsBloc();
   final dateBloc = AddTransactionsBloc();
   final detailBloc = AddTransactionsBloc();
   final mainBloc = AddTransactionsBloc();
-  late FToast fToast;
 
   @override
   void dispose() {
     super.dispose();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    fToast = FToast();
-    fToast.init(context);
-  }
-
-  void showToast(String msg, bool isError) {
-    Widget toast = Container(
-      padding: const EdgeInsets.symmetric(
-          horizontal: FontList.font16, vertical: FontList.font12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(FontList.font8),
-        color: ColorList.whiteColor,
-        boxShadow: [
-          BoxShadow(
-            color: Color.fromARGB(64, 0, 0, 0),
-            spreadRadius: 0,
-            blurRadius: 4,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SvgPicture.asset(
-            alignment: Alignment.topRight,
-            isError ? 'assets/icons/ic_exits.svg' : 'assets/icons/ic_check.svg',
-            height: FontList.font14,
-            width: FontList.font14,
-            colorFilter: ColorFilter.mode(
-                isError ? ColorList.redColor100 : ColorList.primaryColor,
-                BlendMode.srcIn),
-          ),
-          SizedBox(
-            width: FontList.font14,
-          ),
-          Text(
-            msg,
-            style: TextStyle(
-                fontSize: FontList.font14,
-                fontWeight: FontWeight.bold,
-                color:
-                    isError ? ColorList.redColor100 : ColorList.primaryColor),
-          ),
-        ],
-      ),
-    );
-    fToast.showToast(
-      child: toast,
-      gravity: ToastGravity.TOP,
-      toastDuration: Duration(seconds: 2),
-    );
   }
 
   @override
@@ -113,6 +55,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                     right: FontList.font24,
                     left: FontList.font24),
                 children: [
+                  ToastService.buildToast(),
                   Row(
                     spacing: FontList.font16,
                     children: [
@@ -260,7 +203,9 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                       ButtonPrimary(
                         onTap: () {
                           if (nameBloc.state.isError) {
-                            return showToast(nameBloc.state.errorText, true);
+                            //return showToast(nameBloc.state.errorText, true);
+                            ToastService.showToast(context, nameBloc.state.errorText, true);
+                            return;
                           }
                           var nameValue = nameBloc.state.transactionName;
                           var noteValue = noteBloc.state.transactionNote;
