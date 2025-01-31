@@ -53,7 +53,7 @@ class OnUpdateTransactionSectionError extends AddTransactionsEvent {
 
 class OnAddDetailSection extends AddTransactionsEvent {}
 
-class OnRemoveDetailSection extends AddTransactionsEvent{
+class OnRemoveDetailSection extends AddTransactionsEvent {
   final int index;
 
   OnRemoveDetailSection(this.index);
@@ -63,7 +63,8 @@ class OnUpdateDetailTransactionDropDownType extends AddTransactionsEvent {
   final int index;
   final String type;
 
-  OnUpdateDetailTransactionDropDownType({required this.index, required this.type});
+  OnUpdateDetailTransactionDropDownType(
+      {required this.index, required this.type});
 }
 
 class OnUpdateDetailTransactionName extends AddTransactionsEvent {
@@ -81,5 +82,15 @@ class OnUpdateDetailTransactionPrice extends AddTransactionsEvent {
 }
 
 class OnSubmitAddTransactions extends AddTransactionsEvent {
-  OnSubmitAddTransactions();
+  final String nameTransaction;
+  final String noteTransaction;
+  final DateTime dateTimeValue;
+  final List<DetailTransaction> listDetailTransaction;
+
+  OnSubmitAddTransactions({
+    required this.nameTransaction,
+    required this.noteTransaction,
+    required this.dateTimeValue,
+    required this.listDetailTransaction
+  });
 }

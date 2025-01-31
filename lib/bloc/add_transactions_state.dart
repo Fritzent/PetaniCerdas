@@ -1,6 +1,7 @@
 part of 'add_transactions_bloc.dart';
 
 class AddTransactionsState {
+  final String transactionId;
   final String transactionName;
   final String transactionNote;
   final DateTime? transactionDate;
@@ -9,7 +10,7 @@ class AddTransactionsState {
   final bool isFocused;
   final bool isError;
   final bool isEmpty;
-  final TextEditingController? controller;
+  final TextEditingController controller;
   final List<TextEditingController> controllerDetailName;
   final List<TextEditingController> controllerDetailPrice;
   final FocusNode? focusNode;
@@ -18,6 +19,7 @@ class AddTransactionsState {
   final int countDetailSection;
 
   AddTransactionsState({
+    this.transactionId = '',
     this.transactionName = '',
     this.transactionNote = '',
     this.transactionDate,
@@ -26,14 +28,17 @@ class AddTransactionsState {
     this.isFocused = false,
     this.isError = false,
     this.isEmpty = false,
-    this.controller,
+    TextEditingController? controller,
     this.focusNode,
     this.countDetailSection = 1,
     List<TextEditingController>? controllerDetailName,
     List<TextEditingController>? controllerDetailPrice,
     List<FocusNode>? focusNodeName,
     List<FocusNode>? focusNodePrice,
-  })  : listDetailTransaction = listDetailTransaction ??
+  })  : controller = controller ??
+            TextEditingController(
+                text: transactionNote.isEmpty ? '' : transactionNote),
+        listDetailTransaction = listDetailTransaction ??
             [
               DetailTransaction(
                 name: '',
@@ -102,10 +107,8 @@ class AddTransactionsState {
       controllerDetailPrice:
           controllerDetailPrice ?? this.controllerDetailPrice,
       focusNode: focusNode ?? this.focusNode,
-      focusNodeName:
-          focusNodeName ?? this.focusNodeName,
-      focusNodePrice:
-          focusNodePrice ?? this.focusNodePrice,
+      focusNodeName: focusNodeName ?? this.focusNodeName,
+      focusNodePrice: focusNodePrice ?? this.focusNodePrice,
       countDetailSection: countDetailSection ?? this.countDetailSection,
     );
   }

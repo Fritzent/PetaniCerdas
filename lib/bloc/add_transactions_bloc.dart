@@ -2,22 +2,13 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:petani_cerdas/models/detail_transaction.dart';
-
+import 'package:uuid/uuid.dart';
 part 'add_transactions_event.dart';
 part 'add_transactions_state.dart';
 
 class AddTransactionsBloc
     extends Bloc<AddTransactionsEvent, AddTransactionsState> {
-  AddTransactionsBloc()
-      : super(AddTransactionsState(listDetailTransaction: [
-          DetailTransaction(
-            name: '',
-            type: '',
-            price: '',
-            transactionId: '',
-            transactionDetailId: '',
-          )
-        ])) {
+  AddTransactionsBloc() : super((_initializeState())) {
     on<OnUpdateTransactionName>(updateTransactionName);
     on<OnUpdateTransactionNote>(updateTransactionNote);
     on<OnUpdateTransactionDate>(updateTransactionDate);
@@ -34,99 +25,83 @@ class AddTransactionsBloc
     on<OnUpdateDetailTransactionName>(updateDetailTransactionName);
     on<OnUpdateDetailTransactionPrice>(updateDetailTransactionPrice);
   }
+  static AddTransactionsState _initializeState() {
+    var uuid = Uuid();
+    String generateDetailId = uuid.v4();
+
+    return AddTransactionsState(
+      listDetailTransaction: [
+        DetailTransaction(
+          name: '',
+          type: '',
+          price: '',
+          transactionId: '',
+          transactionDetailId: generateDetailId,
+        )
+      ],
+    );
+  }
+
   FutureOr<void> updateTransactionName(OnUpdateTransactionName event, emit) {
     if (event.nameTransaction.isEmpty) {
-      return emit(AddTransactionsState(
+      return emit(state.copyWith(
           transactionName: event.nameTransaction,
-          transactionNote: state.transactionNote,
-          transactionDate: state.transactionDate,
-          listDetailTransaction: state.listDetailTransaction,
           isError: true,
           errorText: 'Nama Transaksi Tidak Boleh Kosong'));
     }
-    emit(AddTransactionsState(
-        transactionName: event.nameTransaction,
-        transactionNote: state.transactionNote,
-        transactionDate: state.transactionDate,
-        listDetailTransaction: state.listDetailTransaction));
+    emit(state.copyWith(
+      transactionName: event.nameTransaction,
+    ));
   }
 
   FutureOr<void> updateTransactionNote(OnUpdateTransactionNote event, emit) {
-    emit(AddTransactionsState(
-        transactionName: state.transactionName,
-        transactionNote: event.noteTransaction,
-        transactionDate: state.transactionDate,
-        listDetailTransaction: state.listDetailTransaction));
+    emit(state.copyWith(
+      transactionNote: event.noteTransaction,
+    ));
   }
 
   FutureOr<void> updateTransactionDate(OnUpdateTransactionDate event, emit) {
-    if (event.dateTransaction == null) {
-      return emit(AddTransactionsState(
-          transactionName: state.transactionName,
-          transactionNote: state.transactionNote,
-          transactionDate: event.dateTransaction,
-          listDetailTransaction: state.listDetailTransaction,
-          errorText: 'Tanggal Transaksi Tidak Boleh Kosong'));
-    }
-    emit(AddTransactionsState(
-        transactionName: state.transactionName,
-        transactionNote: state.transactionNote,
-        transactionDate: event.dateTransaction,
-        listDetailTransaction: state.listDetailTransaction));
+    emit(state.copyWith(transactionDate: event.dateTransaction));
+    add(OnUpdateTransactionDateField(event.dateTransaction.toString()));
   }
 
   FutureOr<void> updateTransactionDateField(
       OnUpdateTransactionDateField event, emit) {
     final newController = TextEditingController(text: event.dateTimeValue);
-    emit(AddTransactionsState(controller: newController));
+    emit(state.copyWith(controller: newController));
   }
 
   FutureOr<void> updateTransactionDetails(
-      OnUpdateTransactionDetail event, emit) {
-    // List<DetailTransaction>? previousList = state.listDetailTransaction;
-    // if (previousList != null) {
-    //   previousList.add(event.detailTransaction);
-    // } else {
-    //   previousList = event.detailTransaction as List<DetailTransaction>?;
-    // }
-    // emit(AddTransactionsState(
-    //     transactionName: state.transactionName,
-    //     transactionNote: state.transactionNote,
-    //     transactionDate: state.transactionDate,
-    //     listDetailTransaction: previousList));
-  }
+      OnUpdateTransactionDetail event, emit) {}
 
   FutureOr<void> customeTextFieldFocusChange(OnFocusChange event, emit) {
-    emit(AddTransactionsState(isFocused: event.isFocused));
+    emit(state.copyWith(isFocused: event.isFocused));
   }
 
   FutureOr<void> customeTextFieldTextChange(OnTextChange event, emit) {
-    emit(AddTransactionsState(isEmpty: event.isEmpty));
+    emit(state.copyWith(isEmpty: event.isEmpty));
   }
 
   FutureOr<void> updateTransactionSectionError(
       OnUpdateTransactionSectionError event, emit) {
-    emit(AddTransactionsState(
-        isError: event.isError, errorText: event.errorText));
+    emit(state.copyWith(isError: event.isError, errorText: event.errorText));
   }
 
   FutureOr<void> addDetailSection(OnAddDetailSection event, emit) {
-    final newDetails =
-        List<DetailTransaction>.from(state.listDetailTransaction)
-          ..add(DetailTransaction(
-            name: '',
-            type: '',
-            price: '',
-            transactionId: '',
-            transactionDetailId: '',
-          ));
+    final newDetails = List<DetailTransaction>.from(state.listDetailTransaction)
+      ..add(DetailTransaction(
+        name: '',
+        type: '',
+        price: '',
+        transactionId: '',
+        transactionDetailId: Uuid().v4(),
+      ));
     emit(AddTransactionsState(listDetailTransaction: newDetails));
   }
 
   FutureOr<void> removeDetailSection(OnRemoveDetailSection event, emit) {
-    final newDetails =
-        List<DetailTransaction>.from(state.listDetailTransaction)
-          ..removeAt(event.index);
+    final newDetails = List<DetailTransaction>.from(state.listDetailTransaction)
+      ..removeAt(event.index);
 
     emit(AddTransactionsState(listDetailTransaction: newDetails));
   }
@@ -139,7 +114,7 @@ class AddTransactionsBloc
     updatedList[event.index] =
         updatedList[event.index].copyWith(type: event.type);
 
-    emit(AddTransactionsState(listDetailTransaction: updatedList));
+    emit(state.copyWith(listDetailTransaction: updatedList));
   }
 
   FutureOr<void> updateDetailTransactionName(
@@ -191,5 +166,11 @@ class AddTransactionsBloc
       focusNodePrice: state.focusNodePrice,
     ));
   }
-  FutureOr<void> submitTransactions(OnSubmitAddTransactions event, emit) {}
+
+  FutureOr<void> submitTransactions(OnSubmitAddTransactions event, emit) {
+    var uuid = Uuid();
+    String generateTransactionId = uuid.v4();
+
+    var check = event;
+  }
 }

@@ -135,7 +135,7 @@ class _CustomeTextFieldWithTitleState extends State<CustomeTextFieldWithTitle> {
                   child: AbsorbPointer(
                     child: TextFormField(
                       keyboardType: widget.keypadType,
-                      controller: state.controller ?? widget.controller,
+                      controller: state.controller,
                       focusNode: state.focusNode,
                       onChanged: widget.onChanged,
                       validator: widget.validator,

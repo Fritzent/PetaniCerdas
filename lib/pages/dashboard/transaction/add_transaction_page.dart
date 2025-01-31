@@ -20,7 +20,6 @@ class AddTransactionPage extends StatefulWidget {
 class _AddTransactionPageState extends State<AddTransactionPage> {
   TextEditingController nameController = TextEditingController();
   TextEditingController noteController = TextEditingController();
-  TextEditingController dateController = TextEditingController();
   FocusNode nameFocusNode = FocusNode();
   FocusNode noteFocusNode = FocusNode();
   FocusNode dateFocusNode = FocusNode();
@@ -29,6 +28,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   final noteBloc = AddTransactionsBloc();
   final dateBloc = AddTransactionsBloc();
   final detailBloc = AddTransactionsBloc();
+  final mainBloc = AddTransactionsBloc();
 
   @override
   void dispose() {
@@ -39,6 +39,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider(create: (_) => mainBloc),
         BlocProvider(create: (_) => nameBloc),
         BlocProvider(create: (_) => noteBloc),
         BlocProvider(create: (_) => dateBloc),
@@ -119,7 +120,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                         keypadType: TextInputType.text,
                         formSection: 'Date',
                         textFieldBloc: dateBloc,
-                        controller: dateController,
+                        controller: dateBloc.state.controller,
                         focusNode: dateFocusNode,
                         isDateSection: true,
                         onChanged: (value) {
@@ -127,12 +128,10 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                             dateBloc.add(OnUpdateTransactionSectionError(
                                 true, 'Tanggal Transaksi Tidak Boleh Kosong'));
                           } else {
-                            final newController =
-                                TextEditingController(text: value);
-                            dateController = newController;
                             DateTime dateValue =
                                 DateFormat("yyyy-MM-dd").parse(value);
-                            dateBloc.add(OnUpdateTransactionDate(dateValue));
+                            dateBloc.add(OnUpdateTransactionDate(
+                                dateValue));
                           }
                         },
                       ),
@@ -162,14 +161,18 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                               focusNodePrice: state.focusNodePrice[index],
                               onChangedType: (value) {
                                 if (value != null) {
-                                  detailBloc.add(OnUpdateDetailTransactionDropDownType(index: index, type: value.name));
+                                  detailBloc.add(
+                                      OnUpdateDetailTransactionDropDownType(
+                                          index: index, type: value.name));
                                 }
                               },
                               onChangedName: (value) {
-                                detailBloc.add(OnUpdateDetailTransactionName(index: index, value: value));
+                                detailBloc.add(OnUpdateDetailTransactionName(
+                                    index: index, value: value));
                               },
                               onChangedPrice: (value) {
-                                detailBloc.add(OnUpdateDetailTransactionPrice(index: index, value: value));
+                                detailBloc.add(OnUpdateDetailTransactionPrice(
+                                    index: index, value: value));
                               },
                             );
                           }),
@@ -204,6 +207,12 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                           var dateValue = dateBloc.state.transactionDate;
                           var detailValue =
                               detailBloc.state.listDetailTransaction;
+
+                          mainBloc.add(OnSubmitAddTransactions(
+                              nameTransaction: nameValue,
+                              noteTransaction: noteValue,
+                              dateTimeValue: dateValue!,
+                              listDetailTransaction: detailValue));
                         },
                         buttonText: 'Selanjutnya',
                       ),
