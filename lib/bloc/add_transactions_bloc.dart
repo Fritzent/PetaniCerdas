@@ -79,7 +79,7 @@ class AddTransactionsBloc
   }
 
   FutureOr<void> customeTextFieldTextChange(OnTextChange event, emit) {
-    emit(state.copyWith(isEmpty: event.isEmpty));
+    emit(state.copyWith(isEmpty: event.isEmpty, isError: false, errorText: ''));
   }
 
   FutureOr<void> updateTransactionSectionError(

@@ -17,6 +17,7 @@ dependencies:
   flutter_bloc: ^8.1.6
   flutter_secure_storage: ^9.2.3
   flutter_svg: ^2.0.16
+  fluttertoast: ^8.2.10
   gap: ^3.0.1
   google_fonts: ^6.2.1
   intl: ^0.20.1

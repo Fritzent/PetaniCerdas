@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 import 'package:petani_cerdas/bloc/add_transactions_bloc.dart';
@@ -29,10 +30,67 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   final dateBloc = AddTransactionsBloc();
   final detailBloc = AddTransactionsBloc();
   final mainBloc = AddTransactionsBloc();
+  late FToast fToast;
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fToast = FToast();
+    fToast.init(context);
+  }
+
+  void showToast(String msg, bool isError) {
+    Widget toast = Container(
+      padding: const EdgeInsets.symmetric(
+          horizontal: FontList.font16, vertical: FontList.font12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(FontList.font8),
+        color: ColorList.whiteColor,
+        boxShadow: [
+          BoxShadow(
+            color: Color.fromARGB(64, 0, 0, 0),
+            spreadRadius: 0,
+            blurRadius: 4,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SvgPicture.asset(
+            alignment: Alignment.topRight,
+            isError ? 'assets/icons/ic_exits.svg' : 'assets/icons/ic_check.svg',
+            height: FontList.font14,
+            width: FontList.font14,
+            colorFilter: ColorFilter.mode(
+                isError ? ColorList.redColor100 : ColorList.primaryColor,
+                BlendMode.srcIn),
+          ),
+          SizedBox(
+            width: FontList.font14,
+          ),
+          Text(
+            msg,
+            style: TextStyle(
+                fontSize: FontList.font14,
+                fontWeight: FontWeight.bold,
+                color:
+                    isError ? ColorList.redColor100 : ColorList.primaryColor),
+          ),
+        ],
+      ),
+    );
+    fToast.showToast(
+      child: toast,
+      gravity: ToastGravity.TOP,
+      toastDuration: Duration(seconds: 2),
+    );
   }
 
   @override
@@ -130,8 +188,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                           } else {
                             DateTime dateValue =
                                 DateFormat("yyyy-MM-dd").parse(value);
-                            dateBloc.add(OnUpdateTransactionDate(
-                                dateValue));
+                            dateBloc.add(OnUpdateTransactionDate(dateValue));
                           }
                         },
                       ),
@@ -202,6 +259,9 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                       ),
                       ButtonPrimary(
                         onTap: () {
+                          if (nameBloc.state.isError) {
+                            return showToast(nameBloc.state.errorText, true);
+                          }
                           var nameValue = nameBloc.state.transactionName;
                           var noteValue = noteBloc.state.transactionNote;
                           var dateValue = dateBloc.state.transactionDate;

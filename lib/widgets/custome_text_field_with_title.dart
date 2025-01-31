@@ -67,12 +67,10 @@ class _CustomeTextFieldWithTitleState extends State<CustomeTextFieldWithTitle> {
             });
           }
 
-          if (state.controller != null) {
-            state.controller?.addListener(() {
-              widget.textFieldBloc
-                  .add(OnTextChange(state.controller!.text.isEmpty));
-            });
-          }
+          state.controller.addListener(() {
+            widget.textFieldBloc
+                .add(OnTextChange(state.controller.text.isEmpty));
+          });
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,12 +108,15 @@ class _CustomeTextFieldWithTitleState extends State<CustomeTextFieldWithTitle> {
                                 headerBackgroundColor: ColorList.primaryColor,
                                 headerForegroundColor: ColorList.whiteColor,
                                 confirmButtonStyle: ButtonStyle(
-                                  foregroundColor: WidgetStatePropertyAll(ColorList.primaryColor),
+                                  foregroundColor: WidgetStatePropertyAll(
+                                      ColorList.primaryColor),
                                 ),
                                 cancelButtonStyle: ButtonStyle(
-                                  foregroundColor: WidgetStatePropertyAll(ColorList.grayColor200),
+                                  foregroundColor: WidgetStatePropertyAll(
+                                      ColorList.grayColor200),
                                 ),
-                                yearForegroundColor: WidgetStatePropertyAll(ColorList.blackColor),
+                                yearForegroundColor: WidgetStatePropertyAll(
+                                    ColorList.blackColor),
                               ),
                             ),
                             child: child!,
