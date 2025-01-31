@@ -48,4 +48,14 @@ class DetailTransaction {
       name: json['detail_transaction_name'] as String,
     );
   }
+
+  factory DetailTransaction.fromJsonForDetailBs(Map<String, dynamic> json) {
+  return DetailTransaction(
+    transactionId: json['transaction_id'] as String,
+    transactionDetailId: json['transaction_detail_id'] as String,
+    type: json['detail_transaction_type'] as String,
+    price: json['detail_transaction_price'].toString(), // Convert double to String
+    name: json['detail_transaction_name'] as String,
+  );
+}
 }

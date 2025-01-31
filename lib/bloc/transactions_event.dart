@@ -6,6 +6,11 @@ class FetchTransaction extends TransactionsEvent {
   FetchTransaction();
 }
 
+class FetchDetailTransaction extends TransactionsEvent {
+  final String transactionId;
+  FetchDetailTransaction(this.transactionId);
+}
+
 class SelectedSortBottomSheet extends TransactionsEvent {
   final String? sortBy;
   final String? sortWay;
@@ -40,4 +45,9 @@ class SortByType extends TransactionsEvent {
 class EmitTransactionData extends TransactionsEvent {
   final Map<String, List<Transactions>> groupedTransactionsData;
   EmitTransactionData(this.groupedTransactionsData);
+}
+
+class EmitDetailTransactionData extends TransactionsEvent {
+  final List<DetailTransaction> list;
+  EmitDetailTransactionData(this.list);
 }

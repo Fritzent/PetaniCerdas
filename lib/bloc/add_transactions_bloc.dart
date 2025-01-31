@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:petani_cerdas/models/detail_transaction.dart';
-import 'package:petani_cerdas/models/transaction.dart';
 import 'package:uuid/uuid.dart';
 part 'add_transactions_event.dart';
 part 'add_transactions_state.dart';

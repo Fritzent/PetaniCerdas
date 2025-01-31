@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 import 'package:petani_cerdas/models/transaction.dart';
+import 'package:petani_cerdas/widgets/modal_bottom_sheet_detail_transaction.dart';
 import '../resources/style_config.dart';
 
 class TransactionsItem extends StatefulWidget {
@@ -17,7 +18,13 @@ class _TransactionsItemState extends State<TransactionsItem> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: () {},
+        onTap: () {
+          showCustomModalBottomSheetDetailTransaction(
+              context: context,
+              isDismissible: false,
+              enableDrag: false,
+              transaction: widget.transactions);
+        },
         child: Container(
           padding: EdgeInsets.all(FontList.font8),
           decoration: BoxDecoration(

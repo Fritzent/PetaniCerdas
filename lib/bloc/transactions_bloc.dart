@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
+import 'package:petani_cerdas/models/detail_transaction.dart';
 import 'package:petani_cerdas/resources/bottomsheet_item.dart';
 import '../models/transaction.dart';
 
@@ -22,6 +23,9 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
     on<SortByTotalTransaction>(OnSortByTotalTransaction);
     on<SortByDate>(OnSortByDate);
     on<SortByType>(OnSortByType);
+
+    on<FetchDetailTransaction>(fetchDetailTransactions);
+    on<EmitDetailTransactionData>(OnEmitDetailTransactionData);
   }
 
   Future<String> getData() async {
@@ -36,6 +40,15 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
       groupedTransactions: event.groupedTransactionsData,
       errorMessage: '',
       hasNewUpdate: false,
+    ));
+  }
+
+  void OnEmitDetailTransactionData(
+      EmitDetailTransactionData event, Emitter<TransactionsState> emit) {
+    emit(TransactionsState(
+      isLoading: false,
+      errorMessage: '',
+      listDetailTransaction: event.list,
     ));
   }
 
@@ -89,6 +102,31 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
         errorMessage: e.toString(),
         groupedTransactions: {},
       ));
+    }
+  }
+
+  void fetchDetailTransactions(
+      FetchDetailTransaction event, Emitter<TransactionsState> emit) async {
+    emit(TransactionsState(isLoading: true));
+    try {
+      List<DetailTransaction> data = List.empty();
+
+      FirebaseFirestore.instance
+          .collection('Detail Transaction')
+          .where('transaction_id', isEqualTo: event.transactionId)
+          .snapshots()
+          .listen((QuerySnapshot snapshot) {
+        data = snapshot.docs.map((doc) {
+          return DetailTransaction.fromJsonForDetailBs(
+              doc.data() as Map<String, dynamic>);
+        }).toList();
+        add(EmitDetailTransactionData(data));
+      });
+    } catch (e) {
+      emit(TransactionsState(
+          isLoading: false,
+          errorMessage: e.toString(),
+          listDetailTransaction: state.listDetailTransaction));
     }
   }
 
@@ -151,9 +189,7 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
             'user_id',
             isEqualTo: userId,
           )
-          .orderBy(
-            'transaction_total_price', descending: isDescending
-          )
+          .orderBy('transaction_total_price', descending: isDescending)
           .snapshots()
           .listen((QuerySnapshot snapshot) {
         data = snapshot.docs.map((doc) {
@@ -180,8 +216,7 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
     }
   }
 
-  void OnSortByDate(
-      SortByDate event, Emitter<TransactionsState> emit) async {
+  void OnSortByDate(SortByDate event, Emitter<TransactionsState> emit) async {
     try {
       String userId = await getData();
       List<Transactions> data = List.empty();
@@ -225,8 +260,7 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
     }
   }
 
-  void OnSortByType(
-      SortByType event, Emitter<TransactionsState> emit) async {
+  void OnSortByType(SortByType event, Emitter<TransactionsState> emit) async {
     try {
       String userId = await getData();
       List<Transactions> data = List.empty();

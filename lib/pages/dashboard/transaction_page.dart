@@ -68,8 +68,6 @@ class _TransactionPageState extends State<TransactionPage> {
                 bottom: FontList.font105,
                 child: FloatingActionButton(
                   onPressed: () async {
-                    //Navigator.pushNamed(context, '/add_transaction');
-
                     var result =
                         await Navigator.pushNamed(context, '/add_transaction');
                     
@@ -158,8 +156,6 @@ class _TransactionPageState extends State<TransactionPage> {
                 bottom: FontList.font105,
                 child: FloatingActionButton(
                   onPressed: () async {
-                    //Navigator.pushNamed(context, '/add_transaction');
-
                     var result =
                         await Navigator.pushNamed(context, '/add_transaction');
                     
