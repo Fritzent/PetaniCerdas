@@ -206,26 +206,31 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                             ),
                           ),
                         ),
-                        ButtonPrimary(
-                          onTap: () {
-                            if (nameBloc.state.isError) {
-                              ToastService.showToast(
-                                  context, nameBloc.state.errorText, true);
-                              return;
-                            }
-                            var nameValue = nameBloc.state.transactionName;
-                            var noteValue = noteBloc.state.transactionNote;
-                            var dateValue = dateBloc.state.transactionDate;
-                            var detailValue =
-                                detailBloc.state.listDetailTransaction;
-
-                            detailBloc.add(OnSubmitAddTransactions(
-                                nameTransaction: nameValue,
-                                noteTransaction: noteValue,
-                                dateTimeValue: dateValue!,
-                                listDetailTransaction: detailValue));
-                          },
-                          buttonText: 'Selanjutnya',
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            bottom: FontList.font24
+                          ),
+                          child: ButtonPrimary(
+                            onTap: () {
+                              if (nameBloc.state.isError) {
+                                ToastService.showToast(
+                                    context, nameBloc.state.errorText, true);
+                                return;
+                              }
+                              var nameValue = nameBloc.state.transactionName;
+                              var noteValue = noteBloc.state.transactionNote;
+                              var dateValue = dateBloc.state.transactionDate;
+                              var detailValue =
+                                  detailBloc.state.listDetailTransaction;
+                          
+                              detailBloc.add(OnSubmitAddTransactions(
+                                  nameTransaction: nameValue,
+                                  noteTransaction: noteValue,
+                                  dateTimeValue: dateValue!,
+                                  listDetailTransaction: detailValue));
+                            },
+                            buttonText: 'Selanjutnya',
+                          ),
                         ),
                       ],
                     )),
