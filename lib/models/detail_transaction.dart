@@ -3,7 +3,7 @@ class DetailTransaction {
   final String type;
   final String price;
   final String transactionDetailId;
-  final String transactionId;
+  String transactionId;
 
   DetailTransaction({
     required this.name,

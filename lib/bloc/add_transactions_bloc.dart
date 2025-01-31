@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:petani_cerdas/models/detail_transaction.dart';
+import 'package:petani_cerdas/models/transaction.dart';
 import 'package:uuid/uuid.dart';
 part 'add_transactions_event.dart';
 part 'add_transactions_state.dart';
@@ -167,10 +170,75 @@ class AddTransactionsBloc
     ));
   }
 
-  FutureOr<void> submitTransactions(OnSubmitAddTransactions event, emit) {
-    var uuid = Uuid();
-    String generateTransactionId = uuid.v4();
+  FutureOr<void> submitTransactions(OnSubmitAddTransactions event, emit) async {
+    emit(state.copyWith(isLoading: true));
+    try {
+      var uuid = Uuid();
+      String generateTransactionId = uuid.v4();
 
-    var check = event;
+      List<DetailTransaction> detailTransactions = event.listDetailTransaction;
+      for (var item in detailTransactions) {
+        item.transactionId = generateTransactionId;
+      }
+      await onPushDetailTransaction(detailTransactions, emit);
+      await onPushTransaction(event, emit, generateTransactionId);
+      emit(state.copyWith(
+          isLoading: false, errorMessagePush: '', isSuccessAdd: true));
+    } catch (e) {
+      emit(state.copyWith(
+          isLoading: false, errorMessagePush: e.toString(), isSuccessAdd: false));
+    }
+  }
+
+  FutureOr<void> onPushTransaction(OnSubmitAddTransactions event,
+      Emitter<AddTransactionsState> emit, String id) async {
+    CollectionReference transaction =
+        FirebaseFirestore.instance.collection('Transaction');
+    try {
+      final FlutterSecureStorage secureStorage = FlutterSecureStorage();
+      String? userId = await secureStorage.read(key: 'login_user');
+
+      var totalPrice = onCalculatePrice(event.listDetailTransaction);
+
+      await transaction.add({
+        'transaction_date': event.dateTimeValue,
+        'transaction_id': id,
+        'transaction_name': event.nameTransaction,
+        'transaction_note': event.noteTransaction,
+        'transaction_total_price': totalPrice,
+        'transaction_type': totalPrice > 0 ? 'Pendapatan' : 'Pengeluaran',
+        'user_id': userId,
+      });
+    } catch (error) {
+      emit(
+          state.copyWith(isLoading: false, errorMessagePush: error.toString(), isSuccessAdd: false));
+    }
+  }
+
+  int onCalculatePrice(List<DetailTransaction> list) {
+    int totalPrice = list.fold(
+        0,
+        (sum, item) =>
+            sum +
+            (item.type == 'Pengeluaran'
+                ? -int.parse(item.price)
+                : int.parse(item.price)));
+    return totalPrice;
+  }
+
+  FutureOr<void> onPushDetailTransaction(
+      List<DetailTransaction> detailTransactions,
+      Emitter<AddTransactionsState> emit) async {
+    CollectionReference detailTransaction =
+        FirebaseFirestore.instance.collection('Detail Transaction');
+
+    try {
+      await Future.wait(
+        detailTransactions.map((item) => detailTransaction.add(item.toJson())),
+      );
+    } catch (error) {
+      emit(
+          state.copyWith(isLoading: false, errorMessagePush: error.toString(), isSuccessAdd: false));
+    }
   }
 }

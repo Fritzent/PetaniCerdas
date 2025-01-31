@@ -1,6 +1,9 @@
 part of 'add_transactions_bloc.dart';
 
 class AddTransactionsState {
+  final bool isLoading;
+  final String errorMessagePush;
+  final bool isSuccessAdd;
   final String transactionId;
   final String transactionName;
   final String transactionNote;
@@ -19,6 +22,9 @@ class AddTransactionsState {
   final int countDetailSection;
 
   AddTransactionsState({
+    this.isLoading = false,
+    this.errorMessagePush = '',
+    this.isSuccessAdd = false,
     this.transactionId = '',
     this.transactionName = '',
     this.transactionNote = '',
@@ -76,6 +82,9 @@ class AddTransactionsState {
                 (index) => FocusNode());
 
   AddTransactionsState copyWith({
+    bool? isLoading,
+    String? errorMessagePush,
+    bool? isSuccessAdd,
     String? transactionName,
     String? transactionNote,
     DateTime? transactionDate,
@@ -93,6 +102,9 @@ class AddTransactionsState {
     int? countDetailSection,
   }) {
     return AddTransactionsState(
+      isLoading: isLoading ?? this.isLoading,
+      errorMessagePush: errorMessagePush ?? this.errorMessagePush,
+      isSuccessAdd: isSuccessAdd ?? this.isSuccessAdd,
       transactionName: transactionName ?? this.transactionName,
       transactionNote: transactionNote ?? this.transactionNote,
       transactionDate: transactionDate ?? this.transactionDate,

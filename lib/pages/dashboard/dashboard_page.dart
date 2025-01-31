@@ -9,6 +9,8 @@ import 'package:petani_cerdas/pages/dashboard/settings_page.dart';
 import 'package:petani_cerdas/pages/dashboard/transaction_page.dart';
 import 'package:petani_cerdas/resources/style_config.dart';
 
+import '../../widgets/custom_toast.dart';
+
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
 
@@ -54,6 +56,7 @@ class _DashboardPageState extends State<DashboardPage> {
             return Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                ToastService.buildToast(),
                 Container(
                   margin: EdgeInsets.only(bottom: FontList.font24),
                   padding: const EdgeInsets.symmetric(
