@@ -3,6 +3,7 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
@@ -40,49 +41,49 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDszINvhGXT42DC0StevyCCYJNV5xe9EeA',
-    appId: '1:34550127930:web:ec154873cbc5f154f24403',
-    messagingSenderId: '34550127930',
-    projectId: 'petanicerdas-8101f',
-    authDomain: 'petanicerdas-8101f.firebaseapp.com',
-    storageBucket: 'petanicerdas-8101f.firebasestorage.app',
+  static FirebaseOptions web = FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_API_KEY'] ?? '',
+    appId: dotenv.env['FIREBASE_APP_ID_WEB'] ?? '',
+    messagingSenderId: dotenv.env['FIREBASE_MESSAGING_SENDER_ID'] ?? '',
+    projectId: dotenv.env['FIREBASE_PROJECT_ID'] ?? '',
+    authDomain: '${dotenv.env['FIREBASE_PROJECT_ID']}.firebaseapp.com',
+    storageBucket: '${dotenv.env['FIREBASE_PROJECT_ID']}.firebasestorage.app',
     measurementId: 'G-FE51BEBXGQ',
   );
 
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyB0XgdNLup3ph_WGZf-rY7U1Mk-gJW3GQ0',
-    appId: '1:34550127930:android:8515ecf1ff4c00caf24403',
-    messagingSenderId: '34550127930',
-    projectId: 'petanicerdas-8101f',
-    storageBucket: 'petanicerdas-8101f.firebasestorage.app',
+  static FirebaseOptions android = FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_API_KEY_ANDROID'] ?? '',
+    appId: dotenv.env['FIREBASE_APP_ID_ANDROID'] ?? '',
+    messagingSenderId: dotenv.env['FIREBASE_MESSAGING_SENDER_ID'] ?? '',
+    projectId: dotenv.env['FIREBASE_PROJECT_ID'] ?? '',
+    storageBucket: '${dotenv.env['FIREBASE_PROJECT_ID']}.firebasestorage.app',
   );
 
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyC5ddYAKbXQWp1rIjKY3-DsynD8U7XJ_VM',
-    appId: '1:34550127930:ios:6cc15413b50f3871f24403',
-    messagingSenderId: '34550127930',
-    projectId: 'petanicerdas-8101f',
-    storageBucket: 'petanicerdas-8101f.firebasestorage.app',
+  static FirebaseOptions ios = FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_API_KEY_IOS_MACOS'] ?? '',
+    appId: dotenv.env['FIREBASE_APP_ID_IOS_MACOS'] ?? '',
+    messagingSenderId: dotenv.env['FIREBASE_MESSAGING_SENDER_ID'] ?? '',
+    projectId: dotenv.env['FIREBASE_PROJECT_ID'] ?? '',
+    storageBucket: '${dotenv.env['FIREBASE_PROJECT_ID']}.firebasestorage.app',
     iosBundleId: 'com.example.petaniCerdas',
   );
 
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyC5ddYAKbXQWp1rIjKY3-DsynD8U7XJ_VM',
-    appId: '1:34550127930:ios:6cc15413b50f3871f24403',
-    messagingSenderId: '34550127930',
-    projectId: 'petanicerdas-8101f',
-    storageBucket: 'petanicerdas-8101f.firebasestorage.app',
+  static FirebaseOptions macos = FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_API_KEY_IOS_MACOS'] ?? '',
+    appId: dotenv.env['FIREBASE_APP_ID_IOS_MACOS'] ?? '',
+    messagingSenderId: dotenv.env['FIREBASE_MESSAGING_SENDER_ID'] ?? '',
+    projectId: dotenv.env['FIREBASE_PROJECT_ID'] ?? '',
+    storageBucket: '${dotenv.env['FIREBASE_PROJECT_ID']}.firebasestorage.app',
     iosBundleId: 'com.example.petaniCerdas',
   );
 
-  static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyDszINvhGXT42DC0StevyCCYJNV5xe9EeA',
-    appId: '1:34550127930:web:ab6f6cdb4a61a689f24403',
-    messagingSenderId: '34550127930',
-    projectId: 'petanicerdas-8101f',
-    authDomain: 'petanicerdas-8101f.firebaseapp.com',
-    storageBucket: 'petanicerdas-8101f.firebasestorage.app',
+  static FirebaseOptions windows = FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_API_KEY_WEB_WINDOWS'] ?? '',
+    appId: dotenv.env['FIREBASE_APP_ID_WINDOWS'] ?? '',
+    messagingSenderId: dotenv.env['FIREBASE_MESSAGING_SENDER_ID'] ?? '',
+    projectId: dotenv.env['FIREBASE_PROJECT_ID'] ?? '',
+    authDomain: '${dotenv.env['FIREBASE_PROJECT_ID']}.firebaseapp.com',
+    storageBucket: '${dotenv.env['FIREBASE_PROJECT_ID']}.firebasestorage.app',
     measurementId: 'G-Y1ZXJSSZN4',
   );
 }

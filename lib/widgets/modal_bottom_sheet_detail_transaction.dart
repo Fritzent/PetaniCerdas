@@ -79,7 +79,7 @@ void showCustomModalBottomSheetDetailTransaction({
                                     Container(
                                       width: FontList.font8,
                                       decoration: BoxDecoration(
-                                        color: ColorList.primaryColor,
+                                        color: transaction.type == "Pendapatan" ? ColorList.primaryColor : ColorList.redColor200,
                                         borderRadius: BorderRadius.only(
                                           topLeft:
                                               Radius.circular(FontList.font8),
@@ -149,7 +149,7 @@ void showCustomModalBottomSheetDetailTransaction({
                                                         )}',
                                                     style: TextStyle(
                                                       color:
-                                                          ColorList.primaryColor,
+                                                          transaction.type == "Pendapatan" ? ColorList.primaryColor : ColorList.redColor200,
                                                       fontSize: FontList.font20,
                                                       fontWeight: FontWeight.bold,
                                                     ),
@@ -303,6 +303,7 @@ void showCustomModalBottomSheetDetailTransaction({
                                           );
                                         },
                                       ),
+                                      Gap(FontList.font16),
                                       Row(
                                         children: [
                                           Expanded(
