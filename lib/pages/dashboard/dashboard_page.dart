@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -41,88 +42,95 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => BottomNavCubit(),
-      child: Scaffold(
-        extendBody: true,
-        body: BlocBuilder<BottomNavCubit, int>(
-          builder: (context, currentIndex) {
-            return fragments[currentIndex];
-          },
-        ),
-        bottomNavigationBar: BlocBuilder<BottomNavCubit, int>(
-          builder: (context, currentIndex) {
-            final bottomNavCubit = context.read<BottomNavCubit>();
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ToastService.buildToast(),
-                Container(
-                  margin: EdgeInsets.only(bottom: FontList.font24),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: FontList.font16,
-                    vertical: FontList.font15,
-                  ),
-                  decoration: BoxDecoration(
-                    color: ColorList.whiteColor,
-                    border: Border.all(
-                      color: ColorList.whiteColor200,
-                      width: 1.0,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        SystemNavigator.pop();
+      },
+      child: BlocProvider(
+        create: (context) => BottomNavCubit(),
+        child: Scaffold(
+          extendBody: true,
+          body: BlocBuilder<BottomNavCubit, int>(
+            builder: (context, currentIndex) {
+              return fragments[currentIndex];
+            },
+          ),
+          bottomNavigationBar: BlocBuilder<BottomNavCubit, int>(
+            builder: (context, currentIndex) {
+              final bottomNavCubit = context.read<BottomNavCubit>();
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ToastService.buildToast(),
+                  Container(
+                    margin: EdgeInsets.only(bottom: FontList.font24),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: FontList.font16,
+                      vertical: FontList.font15,
                     ),
-                    borderRadius: BorderRadius.circular(FontList.font8),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color.fromARGB(64, 0, 0, 0),
-                        spreadRadius: 0,
-                        blurRadius: 4,
-                        offset: Offset(0, 4),
+                    decoration: BoxDecoration(
+                      color: ColorList.whiteColor,
+                      border: Border.all(
+                        color: ColorList.whiteColor200,
+                        width: 1.0,
                       ),
-                    ],
+                      borderRadius: BorderRadius.circular(FontList.font8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color.fromARGB(64, 0, 0, 0),
+                          spreadRadius: 0,
+                          blurRadius: 4,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      spacing: FontList.font16,
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        buildItemNav(
+                            label: 'Beranda',
+                            icon: 'assets/icons/ic_dashboard.svg',
+                            iconOn: 'assets/icons/ic_dashboard.svg',
+                            isActive: currentIndex == 0,
+                            onTap: () {
+                              bottomNavCubit.changeTab(0);
+                            }),
+                        buildItemNav(
+                            label: 'Transaksi',
+                            icon: 'assets/icons/ic_transaction.svg',
+                            iconOn: 'assets/icons/ic_transaction.svg',
+                            isActive: currentIndex == 1,
+                            onTap: () {
+                              bottomNavCubit.changeTab(1);
+                            }),
+                        buildItemNav(
+                            label: 'Jadwal',
+                            icon: 'assets/icons/ic_calendar.svg',
+                            iconOn: 'assets/icons/ic_calendar.svg',
+                            isActive: currentIndex == 2,
+                            onTap: () {
+                              bottomNavCubit.changeTab(2);
+                            }),
+                        buildItemNav(
+                            label: 'Setelan',
+                            icon: 'assets/icons/ic_settings.svg',
+                            iconOn: 'assets/icons/ic_settings.svg',
+                            isActive: currentIndex == 3,
+                            onTap: () {
+                              bottomNavCubit.changeTab(3);
+                            }),
+                      ],
+                    ),
                   ),
-                  child: Row(
-                    spacing: FontList.font16,
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      buildItemNav(
-                          label: 'Beranda',
-                          icon: 'assets/icons/ic_dashboard.svg',
-                          iconOn: 'assets/icons/ic_dashboard.svg',
-                          isActive: currentIndex == 0,
-                          onTap: () {
-                            bottomNavCubit.changeTab(0);
-                          }),
-                      buildItemNav(
-                          label: 'Transaksi',
-                          icon: 'assets/icons/ic_transaction.svg',
-                          iconOn: 'assets/icons/ic_transaction.svg',
-                          isActive: currentIndex == 1,
-                          onTap: () {
-                            bottomNavCubit.changeTab(1);
-                          }),
-                      buildItemNav(
-                          label: 'Jadwal',
-                          icon: 'assets/icons/ic_calendar.svg',
-                          iconOn: 'assets/icons/ic_calendar.svg',
-                          isActive: currentIndex == 2,
-                          onTap: () {
-                            bottomNavCubit.changeTab(2);
-                          }),
-                      buildItemNav(
-                          label: 'Setelan',
-                          icon: 'assets/icons/ic_settings.svg',
-                          iconOn: 'assets/icons/ic_settings.svg',
-                          isActive: currentIndex == 3,
-                          onTap: () {
-                            bottomNavCubit.changeTab(3);
-                          }),
-                    ],
-                  ),
-                ),
-              ],
-            );
-          },
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
