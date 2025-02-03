@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:petani_cerdas/models/users.dart';
 
 part 'auth_user_event.dart';
 part 'auth_user_state.dart';
@@ -17,10 +18,14 @@ class AuthUserBloc extends Bloc<AuthUserEvent, AuthUserState> {
     on<OtpVerified>(OnOtpVerified);
     on<VerificationFailed>(OnVerificationFailed);
     on<CodeSent>(OnCodeSent);
+    on<OnGetUserName>(getUserName);
   }
 
   Future<void> OnOtpSend(OnSendOtp event, Emitter<AuthUserState> emit) async {
-    emit(state.copyWith(isLoading: true, userName: event.userName, viewedPage: event.viewedPage));
+    emit(state.copyWith(
+        isLoading: true,
+        userName: event.userName,
+        viewedPage: event.viewedPage));
     try {
       await FirebaseAuth.instance.setSettings(
         appVerificationDisabledForTesting: true,
@@ -44,7 +49,10 @@ class AuthUserBloc extends Bloc<AuthUserEvent, AuthUserState> {
       }
     } catch (e) {
       emit(state.copyWith(
-          errorMessage: e.toString(), isLoading: false, userName: '', viewedPage: ''));
+          errorMessage: e.toString(),
+          isLoading: false,
+          userName: '',
+          viewedPage: ''));
     }
   }
 
@@ -97,7 +105,7 @@ class AuthUserBloc extends Bloc<AuthUserEvent, AuthUserState> {
       await auth.signInWithCredential(credential);
       final user = auth.currentUser;
       if (user != null) {
-        if (state.viewedPage == 'RegisterPage'){
+        if (state.viewedPage == 'RegisterPage') {
           await SaveUserDataToFirestore(user);
         }
         await SavedUserDataToStorage(user.uid);
@@ -124,7 +132,37 @@ class AuthUserBloc extends Bloc<AuthUserEvent, AuthUserState> {
   }
 
   Future<void> SavedUserDataToStorage(String value) async {
+    await saveUserData({
+      'login_user': value,
+      'login_user_name': state.userName,
+    });
+  }
+
+  Future<void> saveUserData(Map<String, String> datas) async {
     final FlutterSecureStorage secureStorage = FlutterSecureStorage();
-    await secureStorage.write(key: 'login_user', value: value);
+    for (var data in datas.entries) {
+      await secureStorage.write(key: data.key, value: data.value);
+    }
+  }
+
+  Future<void> getUserName(
+      OnGetUserName event, Emitter<AuthUserState> emit) async {
+        emit(AuthUserState(isLoading: true));
+    try {
+      final userCollection = FirebaseFirestore.instance.collection('Users');
+      final FlutterSecureStorage secureStorage = FlutterSecureStorage();
+      var userId = await secureStorage.read(key: 'login_user');
+      QuerySnapshot querySnapshot =
+          await userCollection.where('user_id', isEqualTo: userId).get();
+      if (querySnapshot.docs.isNotEmpty) {
+        Users userData = Users.fromJson(querySnapshot.docs.first.data() as Map<String, dynamic>);
+        emit(AuthUserState(isLoading: false, userName:  userData.username));
+      } else {
+        await secureStorage.write(key: 'login_user_name', value: '');
+        emit(AuthUserState(isLoading: false, userName:  ''));
+      }
+    } catch (e) {
+      emit(AuthUserState(isLoading: false, userName:  ''));
+    }
   }
 }

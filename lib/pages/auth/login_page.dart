@@ -125,7 +125,7 @@ class _LoginPageState extends State<LoginPage> {
                                         color: ColorList.whiteColor100,
                                         width: 1.0,
                                       ),
-                                      borderRadius: BorderRadius.circular(16),
+                                      borderRadius: BorderRadius.circular(FontList.font16),
                                       boxShadow: [
                                         BoxShadow(
                                           color: Color.fromARGB(64, 0, 0, 0),

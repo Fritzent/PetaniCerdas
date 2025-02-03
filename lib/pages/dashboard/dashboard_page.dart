@@ -31,13 +31,16 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   void initState() {
-    ReadUserDataInStorage();
+    readUserDataInStorage();
     super.initState();
   }
 
-  Future<void> ReadUserDataInStorage() async {
+  Future<void> readUserDataInStorage() async {
     final FlutterSecureStorage secureStorage = FlutterSecureStorage();
-    userUid = (await secureStorage.read(key: 'login_user'))!;
+    String? getUserId = (await secureStorage.read(key: 'login_user'));
+    if (getUserId != null) {
+      userUid = getUserId;
+    }
   }
 
   @override

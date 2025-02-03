@@ -29,3 +29,6 @@ class OnVerifyOtp extends AuthUserEvent {
 
   OnVerifyOtp(this.otp);
 }
+
+class OnGetUserName extends AuthUserEvent {
+}
