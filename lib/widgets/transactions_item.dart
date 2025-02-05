@@ -72,16 +72,20 @@ class _TransactionsItemState extends State<TransactionsItem> {
                     ),
                   ),
                   Text(
-                    widget.transactions.transactionName
-                        .split(' ')
-                        .take(2)
-                        .map((word) => word[0].toUpperCase())
-                        .join(''),
+                    (widget.transactions.transactionName.isNotEmpty)
+                        ? widget.transactions.transactionName
+                            .split(' ')
+                            .where((word) => word.isNotEmpty)
+                            .take(2)
+                            .map((word) => word[0].toUpperCase())
+                            .join('')
+                        : '', // Fallback for empty transactionName
                     style: TextStyle(
-                        color: ColorList.whiteColor,
-                        fontSize: FontList.font24,
-                        fontWeight: FontWeight.bold),
-                  ),
+                      color: ColorList.whiteColor,
+                      fontSize: FontList.font24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
                 ],
               ),
               Gap(FontList.font8),

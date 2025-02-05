@@ -19,6 +19,7 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
 
   TransactionsBloc() : super(TransactionsState()) {
     on<FetchTransaction>(OnFetchTransactions);
+    on<LoadMoreTransactions>(LoadMore);
     on<EmitTransactionData>(OnEmitData);
     on<SelectedSortBottomSheet>(OnSelectedSortBottomSheet);
 
@@ -79,38 +80,118 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
     }
   }
 
-  void OnFetchTransactions(
-      FetchTransaction event, Emitter<TransactionsState> emit) async {
-    emit(TransactionsState(isLoading: true));
-
+  void LoadMore(
+      LoadMoreTransactions event, Emitter<TransactionsState> emit) async {
+    if (state.isLoading || state.lastDocument == null) {
+      return;
+    }
+    emit(state.copyWith(isLoading: true));
     try {
       String userId = await getData();
-      List<Transactions> data = List.empty();
 
-      _transactionSubscription = FirebaseFirestore.instance
+      Query query = FirebaseFirestore.instance
           .collection('Transaction')
           .where('user_id', isEqualTo: userId)
-          .snapshots()
-          .listen((QuerySnapshot snapshot) {
-        data = snapshot.docs.map((doc) {
-          return Transactions.fromJson(doc.data() as Map<String, dynamic>);
-        }).toList();
+          .orderBy('transaction_date', descending: true)
+          .startAfterDocument(state.lastDocument!)
+          .limit(10);
 
-        Map<String, List<Transactions>> groupedTransactionsData = {};
-        for (var transaction in data) {
-          String month = DateFormat.yMMMM().format(transaction.date);
-          if (!groupedTransactionsData.containsKey(month)) {
-            groupedTransactionsData[month] = [];
-          }
-          groupedTransactionsData[month]!.add(transaction);
+      QuerySnapshot snapshot = await query.get();
+
+      if (snapshot.docs.isEmpty) {
+        emit(state.copyWith(
+            isLoading: false, hasNewUpdate: false, groupedTransactions: state.groupedTransactions));
+        return;
+      }
+
+      List<Transactions> data = snapshot.docs.map((doc) {
+        return Transactions.fromJson(doc.data() as Map<String, dynamic>);
+      }).toList();
+
+      Map<String, List<Transactions>> groupedTransactionsData = {};
+      for (var transaction in data) {
+        String month = DateFormat.yMMMM().format(transaction.date);
+        if (!groupedTransactionsData.containsKey(month)) {
+          groupedTransactionsData[month] = [];
         }
+        groupedTransactionsData[month]!.add(transaction);
+      }
 
-        if (!isClosed) {
-          add(EmitTransactionData(groupedTransactionsData));
+      Map<String, List<Transactions>> mergedTransactions =
+          Map.from(state.groupedTransactions);
+      groupedTransactionsData.forEach((month, transactions) {
+        if (mergedTransactions.containsKey(month)) {
+          mergedTransactions[month]!.addAll(transactions);
+        } else {
+          mergedTransactions[month] = transactions;
         }
       });
+
+      emit(state.copyWith(
+        groupedTransactions: mergedTransactions,
+        isLoading: false,
+        hasNewUpdate: data.isNotEmpty,
+        lastDocument: snapshot.docs.last,
+      ));
     } catch (e) {
-      emit(TransactionsState(
+      emit(state.copyWith(
+        isLoading: false,
+        errorMessage: e.toString(),
+        groupedTransactions: state.groupedTransactions,
+      ));
+    }
+  }
+
+  void OnFetchTransactions(
+      FetchTransaction event, Emitter<TransactionsState> emit) async {
+    emit(state.copyWith(isLoading: true));
+    try {
+      String userId = await getData();
+
+      Query query = FirebaseFirestore.instance
+          .collection('Transaction')
+          .where('user_id', isEqualTo: userId)
+          .orderBy('transaction_date', descending: true)
+          .limit(10);
+      QuerySnapshot snapshot = await query.get();
+
+      if (snapshot.docs.isEmpty) {
+        emit(state.copyWith(
+            isLoading: false, hasNewUpdate: false, groupedTransactions: {}));
+        return;
+      }
+
+      List<Transactions> data = snapshot.docs.map((doc) {
+        return Transactions.fromJson(doc.data() as Map<String, dynamic>);
+      }).toList();
+
+      Map<String, List<Transactions>> groupedTransactionsData = {};
+      for (var transaction in data) {
+        String month = DateFormat.yMMMM().format(transaction.date);
+        if (!groupedTransactionsData.containsKey(month)) {
+          groupedTransactionsData[month] = [];
+        }
+        groupedTransactionsData[month]!.add(transaction);
+      }
+
+      Map<String, List<Transactions>> mergedTransactions =
+          Map.from(state.groupedTransactions);
+      groupedTransactionsData.forEach((month, transactions) {
+        if (mergedTransactions.containsKey(month)) {
+          mergedTransactions[month]!.addAll(transactions);
+        } else {
+          mergedTransactions[month] = transactions;
+        }
+      });
+
+      emit(state.copyWith(
+        groupedTransactions: mergedTransactions,
+        isLoading: false,
+        hasNewUpdate: data.isNotEmpty,
+        lastDocument: snapshot.docs.last,
+      ));
+    } catch (e) {
+      emit(state.copyWith(
         isLoading: false,
         errorMessage: e.toString(),
         groupedTransactions: {},

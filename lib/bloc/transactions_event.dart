@@ -6,6 +6,8 @@ class FetchTransaction extends TransactionsEvent {
   FetchTransaction();
 }
 
+class LoadMoreTransactions extends TransactionsEvent {}
+
 class FetchDetailTransaction extends TransactionsEvent {
   final String transactionId;
   FetchDetailTransaction(this.transactionId);
