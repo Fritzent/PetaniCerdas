@@ -48,6 +48,8 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       _transactionSubscription = FirebaseFirestore.instance
           .collection('Transaction')
           .where('user_id', isEqualTo: userId)
+          .limit(5)
+          .orderBy('transaction_date', descending: true)
           .snapshots()
           .listen((QuerySnapshot snapshot) {
         latestTransaction = snapshot.docs.map((doc) {
