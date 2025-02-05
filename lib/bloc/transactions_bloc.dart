@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,6 +15,7 @@ part 'transactions_state.dart';
 class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
   final FirebaseFirestore db = FirebaseFirestore.instance;
   final FirebaseAuth auth = FirebaseAuth.instance;
+  StreamSubscription<QuerySnapshot>? _transactionSubscription;
 
   TransactionsBloc() : super(TransactionsState()) {
     on<FetchTransaction>(OnFetchTransactions);
@@ -32,6 +35,14 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
     final FlutterSecureStorage secureStorage = FlutterSecureStorage();
     final String? value = await secureStorage.read(key: 'login_user');
     return value ?? '';
+  }
+
+  @override
+  Future<void> close() {
+    if (_transactionSubscription != null) {
+      _transactionSubscription?.cancel();
+    }
+    return super.close();
   }
 
   void OnEmitData(EmitTransactionData event, Emitter<TransactionsState> emit) {
@@ -76,7 +87,7 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
       String userId = await getData();
       List<Transactions> data = List.empty();
 
-      FirebaseFirestore.instance
+      _transactionSubscription = FirebaseFirestore.instance
           .collection('Transaction')
           .where('user_id', isEqualTo: userId)
           .snapshots()
@@ -94,7 +105,9 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
           groupedTransactionsData[month]!.add(transaction);
         }
 
-        add(EmitTransactionData(groupedTransactionsData));
+        if (!isClosed) {
+          add(EmitTransactionData(groupedTransactionsData));
+        }
       });
     } catch (e) {
       emit(TransactionsState(

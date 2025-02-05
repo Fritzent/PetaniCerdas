@@ -5,7 +5,8 @@ import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:petani_cerdas/bloc/auth_user_bloc.dart';
-import 'package:petani_cerdas/bloc/transactions_bloc.dart';
+import 'package:petani_cerdas/bloc/dashboard_bloc.dart';
+import 'package:petani_cerdas/widgets/transactions_item.dart';
 
 import '../../resources/style_config.dart';
 
@@ -28,7 +29,8 @@ class _BerandaPageState extends State<BerandaPage> {
             create: (context) => AuthUserBloc()..add(OnGetUserName()),
           ),
           BlocProvider(
-            create: (context) => TransactionsBloc(),
+            create: (context) => DashboardBloc()..add(OnGetLatestTransaction()),
+            //create: (context) => DashboardBloc(),
           ),
         ],
         child: Scaffold(
@@ -169,7 +171,73 @@ class _BerandaPageState extends State<BerandaPage> {
                       fontSize: FontList.font20,
                       fontWeight: FontWeight.bold,
                       color: ColorList.blackColor),
-                )
+                ),
+                Gap(FontList.font8),
+                BlocBuilder<DashboardBloc, DashboardState>(
+                    builder: (context, state) {
+                  if (state.isLoadingLoadLatestTransaction) {
+                    return Center(
+                      child: CircularProgressIndicator(
+                        color: ColorList.primaryColor,
+                      ),
+                    );
+                  } else if (!state.isLoadingLoadLatestTransaction &&
+                      state.listLatestTransaction.isNotEmpty) {
+                    return Expanded(
+                      child: ListView(
+                        padding: EdgeInsets.only(bottom: FontList.font16),
+                        children: [
+                          ...state.listLatestTransaction.map((transaction) {
+                            return Padding(
+                              padding: const EdgeInsets.only(
+                                  bottom: FontList.font16),
+                              child:
+                                  TransactionsItem(transactions: transaction),
+                            );
+                          })
+                        ],
+                      ),
+                    );
+                  }
+                  return Expanded(
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Image.asset('assets/images/empty_transaction.png'),
+                          Gap(FontList.font18),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: FontList.font24,
+                            ),
+                            child: Text(
+                              'Belum ada transaksi tercatat saat ini',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: FontList.font20,
+                                  color: ColorList.blackColor),
+                            ),
+                          ),
+                          Gap(FontList.font4),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: FontList.font48),
+                            child: Text(
+                              'Yuk, mulai catat dan kelola keuanganmu dengan mudah!',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: FontList.font14,
+                                  color: ColorList.grayColor300),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }),
               ],
             ),
           ),
