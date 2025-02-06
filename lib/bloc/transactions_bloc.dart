@@ -82,10 +82,10 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
 
   void LoadMore(
       LoadMoreTransactions event, Emitter<TransactionsState> emit) async {
-    if (state.isLoading || state.lastDocument == null) {
+    if (state.isLoadingLoadMore || state.lastDocument == null) {
       return;
     }
-    emit(state.copyWith(isLoading: true));
+    emit(state.copyWith(isLoadingLoadMore: true));
     try {
       String userId = await getData();
 
@@ -100,7 +100,7 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
 
       if (snapshot.docs.isEmpty) {
         emit(state.copyWith(
-            isLoading: false, hasNewUpdate: false, groupedTransactions: state.groupedTransactions));
+            isLoadingLoadMore: false, hasNewUpdate: false, groupedTransactions: state.groupedTransactions));
         return;
       }
 
@@ -129,13 +129,13 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
 
       emit(state.copyWith(
         groupedTransactions: mergedTransactions,
-        isLoading: false,
+        isLoadingLoadMore: false,
         hasNewUpdate: data.isNotEmpty,
         lastDocument: snapshot.docs.last,
       ));
     } catch (e) {
       emit(state.copyWith(
-        isLoading: false,
+        isLoadingLoadMore: false,
         errorMessage: e.toString(),
         groupedTransactions: state.groupedTransactions,
       ));
@@ -157,7 +157,7 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
 
       if (snapshot.docs.isEmpty) {
         emit(state.copyWith(
-            isLoading: false, hasNewUpdate: false, groupedTransactions: {}));
+            isLoading: false, hasNewUpdate: false, isEmpty: true, groupedTransactions: {}));
         return;
       }
 
@@ -188,6 +188,7 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
         groupedTransactions: mergedTransactions,
         isLoading: false,
         hasNewUpdate: data.isNotEmpty,
+        isEmpty: false,
         lastDocument: snapshot.docs.last,
       ));
     } catch (e) {
@@ -195,6 +196,7 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
         isLoading: false,
         errorMessage: e.toString(),
         groupedTransactions: {},
+        isEmpty: true,
       ));
     }
   }

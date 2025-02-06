@@ -182,59 +182,59 @@ class _BerandaPageState extends State<BerandaPage> {
                       ),
                     );
                   } else if (!state.isLoadingLoadLatestTransaction &&
-                      state.listLatestTransaction.isNotEmpty) {
+                      state.listLatestTransaction.isEmpty && state.isEmpty) {
                     return Expanded(
-                      child: ListView(
-                        padding: EdgeInsets.only(bottom: FontList.font16),
-                        children: [
-                          ...state.listLatestTransaction.map((transaction) {
-                            return Padding(
-                              padding: const EdgeInsets.only(
-                                  bottom: FontList.font16),
-                              child:
-                                  TransactionsItem(transactions: transaction),
-                            );
-                          })
-                        ],
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Image.asset('assets/images/empty_transaction.png'),
+                            Gap(FontList.font18),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: FontList.font24,
+                              ),
+                              child: Text(
+                                'Belum ada transaksi tercatat saat ini',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: FontList.font20,
+                                    color: ColorList.blackColor),
+                              ),
+                            ),
+                            Gap(FontList.font4),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: FontList.font48),
+                              child: Text(
+                                'Yuk, mulai catat dan kelola keuanganmu dengan mudah!',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: FontList.font14,
+                                    color: ColorList.grayColor300),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   }
+
                   return Expanded(
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Image.asset('assets/images/empty_transaction.png'),
-                          Gap(FontList.font18),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: FontList.font24,
-                            ),
-                            child: Text(
-                              'Belum ada transaksi tercatat saat ini',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: FontList.font20,
-                                  color: ColorList.blackColor),
-                            ),
-                          ),
-                          Gap(FontList.font4),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: FontList.font48),
-                            child: Text(
-                              'Yuk, mulai catat dan kelola keuanganmu dengan mudah!',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: FontList.font14,
-                                  color: ColorList.grayColor300),
-                            ),
-                          ),
-                        ],
-                      ),
+                    child: ListView(
+                      padding: EdgeInsets.only(bottom: FontList.font16),
+                      children: [
+                        ...state.listLatestTransaction.map((transaction) {
+                          return Padding(
+                            padding:
+                                const EdgeInsets.only(bottom: FontList.font16),
+                            child: TransactionsItem(transactions: transaction),
+                          );
+                        })
+                      ],
                     ),
                   );
                 }),

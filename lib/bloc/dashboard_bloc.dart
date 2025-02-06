@@ -36,6 +36,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       isLoadingLoadLatestTransaction: false,
       errorMessageLoadLatestTransaction: '',
       listLatestTransaction: event.list,
+      isEmpty: event.list.isEmpty ? true : false,
     ));
   }
 
@@ -52,6 +53,12 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
           .orderBy('transaction_date', descending: true)
           .snapshots()
           .listen((QuerySnapshot snapshot) {
+        if (snapshot.docs.isEmpty) {
+          if (!isClosed) {
+            add(OnEmitLatestTransaction(latestTransaction));
+          }
+          return;
+        }
         latestTransaction = snapshot.docs.map((doc) {
           return Transactions.fromJson(doc.data() as Map<String, dynamic>);
         }).toList();
@@ -63,6 +70,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     } catch (e) {
       emit(DashboardState(
           isLoadingLoadLatestTransaction: false,
+          isEmpty: true,
           errorMessageLoadLatestTransaction: e.toString(),
           listLatestTransaction: List.empty()));
     }
