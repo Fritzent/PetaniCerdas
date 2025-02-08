@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:petani_cerdas/cubit/bottom_nav_cubit.dart';
 import 'package:petani_cerdas/pages/dashboard/beranda_page.dart';
 import 'package:petani_cerdas/pages/dashboard/calendar_page.dart';
@@ -13,7 +17,8 @@ import 'package:petani_cerdas/resources/style_config.dart';
 import '../../widgets/custom_toast.dart';
 
 class DashboardPage extends StatefulWidget {
-  const DashboardPage({super.key});
+  final FlutterLocalNotificationsPlugin notificationsPlugin;
+  const DashboardPage({super.key, required this.notificationsPlugin});
 
   @override
   State<DashboardPage> createState() => _DashboardPageState();
@@ -29,9 +34,35 @@ class _DashboardPageState extends State<DashboardPage> {
     const SettingsPage(),
   ];
 
+  Future<void> requestNotificationPermission(
+      FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin) async {
+    if (Platform.isIOS) {
+      final iosImplementation =
+          flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+              IOSFlutterLocalNotificationsPlugin>();
+
+      if (iosImplementation != null) {
+        final bool? result = await iosImplementation.requestPermissions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
+        print('iOS notification permission granted: $result');
+      }
+    } else if (Platform.isAndroid) {
+      final status = await Permission.notification.request();
+      if (status.isGranted) {
+        print('Android notification permission granted');
+      } else {
+        print('Android notification permission denied');
+      }
+    }
+  }
+
   @override
   void initState() {
     readUserDataInStorage();
+    requestNotificationPermission(widget.notificationsPlugin);
     super.initState();
   }
 

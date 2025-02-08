@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -30,23 +29,14 @@ void main() async {
   late AndroidInitializationSettings initializationSettingsAndroid;
   late DarwinInitializationSettings iosSettings;
 
-  if (Platform.isAndroid) {
-    initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
-  }
-  if (Platform.isIOS) {
-    iosSettings = DarwinInitializationSettings();
-  }
-
-  //Note : For IOS UnderDevelopment
+  initializationSettingsAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
+  iosSettings = DarwinInitializationSettings();
 
   final InitializationSettings initializationSettings = InitializationSettings(
-    android: initializationSettingsAndroid,
-    iOS: iosSettings
-  );
+      android: initializationSettingsAndroid, iOS: iosSettings);
 
-  await flutterLocalNotificationsPlugin.initialize(
-    initializationSettings);
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -86,11 +76,15 @@ class MainApp extends StatelessWidget {
             if (state.status == SessionStatus.notFound) {
               return LoginPage();
             }
-            return DashboardPage();
+            return DashboardPage(
+              notificationsPlugin: flutterLocalNotificationsPlugin,
+            );
           },
         ),
         routes: {
-          '/dashboard': (context) => DashboardPage(),
+          '/dashboard': (context) => DashboardPage(
+                notificationsPlugin: flutterLocalNotificationsPlugin,
+              ),
           '/login': (context) => LoginPage(),
           '/login_pin': (context) => LoginPinPage(),
           '/register': (context) => RegisterPage(),
