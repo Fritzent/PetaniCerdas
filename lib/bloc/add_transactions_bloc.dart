@@ -1,16 +1,22 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:petani_cerdas/models/detail_transaction.dart';
 import 'package:uuid/uuid.dart';
+
+import '../repository/notification_service.dart';
 part 'add_transactions_event.dart';
 part 'add_transactions_state.dart';
 
 class AddTransactionsBloc
     extends Bloc<AddTransactionsEvent, AddTransactionsState> {
-  AddTransactionsBloc() : super((_initializeState())) {
+  final NotificationService notificationService;
+  AddTransactionsBloc({required this.notificationService})
+      : super((_initializeState())) {
     on<OnUpdateTransactionName>(updateTransactionName);
     on<OnUpdateTransactionNote>(updateTransactionNote);
     on<OnUpdateTransactionDate>(updateTransactionDate);
@@ -181,11 +187,16 @@ class AddTransactionsBloc
       }
       await onPushDetailTransaction(detailTransactions, emit);
       await onPushTransaction(event, emit, generateTransactionId);
+
+      await showLocalNotification();
+
       emit(state.copyWith(
           isLoading: false, errorMessagePush: '', isSuccessAdd: true));
     } catch (e) {
       emit(state.copyWith(
-          isLoading: false, errorMessagePush: e.toString(), isSuccessAdd: false));
+          isLoading: false,
+          errorMessagePush: e.toString(),
+          isSuccessAdd: false));
     }
   }
 
@@ -209,8 +220,10 @@ class AddTransactionsBloc
         'user_id': userId,
       });
     } catch (error) {
-      emit(
-          state.copyWith(isLoading: false, errorMessagePush: error.toString(), isSuccessAdd: false));
+      emit(state.copyWith(
+          isLoading: false,
+          errorMessagePush: error.toString(),
+          isSuccessAdd: false));
     }
   }
 
@@ -236,8 +249,14 @@ class AddTransactionsBloc
         detailTransactions.map((item) => detailTransaction.add(item.toJson())),
       );
     } catch (error) {
-      emit(
-          state.copyWith(isLoading: false, errorMessagePush: error.toString(), isSuccessAdd: false));
+      emit(state.copyWith(
+          isLoading: false,
+          errorMessagePush: error.toString(),
+          isSuccessAdd: false));
     }
+  }
+
+  Future<void> showLocalNotification() async {
+    await notificationService.showTransactionNotification();
   }
 }

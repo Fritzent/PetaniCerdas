@@ -166,6 +166,108 @@ class _BerandaPageState extends State<BerandaPage> {
                 ),
                 Gap(FontList.font16),
                 Text(
+                  'Jadwal Kegiatan',
+                  style: GoogleFonts.inriaSans(
+                      fontSize: FontList.font20,
+                      fontWeight: FontWeight.bold,
+                      color: ColorList.blackColor),
+                ),
+                Gap(FontList.font8),
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(
+                      vertical: FontList.font21, horizontal: FontList.font14),
+                  decoration: BoxDecoration(
+                    color: ColorList.whiteColor,
+                    border: Border.all(
+                      color: ColorList.whiteColor100,
+                      width: 1.0,
+                    ),
+                    borderRadius: BorderRadius.circular(FontList.font8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color.fromARGB(64, 0, 0, 0),
+                        spreadRadius: 0,
+                        blurRadius: 4,
+                        offset: Offset(2, 2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    spacing: FontList.font8,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(FontList.font10),
+                        decoration: BoxDecoration(
+                          color: ColorList.primaryColor,
+                          borderRadius: BorderRadius.circular(FontList.font6),
+                        ),
+                        child: Column(
+                          children: [
+                            Text(
+                              'Rab',
+                              style: TextStyle(
+                                  fontSize: FontList.font16,
+                                  fontWeight: FontWeight.bold,
+                                  color: ColorList.whiteColor),
+                            ),
+                            Text(
+                              '21',
+                              style: TextStyle(
+                                  fontSize: FontList.font36,
+                                  fontWeight: FontWeight.bold,
+                                  color: ColorList.whiteColor),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                          child: Container(
+                              padding: EdgeInsets.all(FontList.font8),
+                              decoration: BoxDecoration(
+                                color: ColorList.whiteColor,
+                                border: Border.all(
+                                  color: ColorList.whiteColor100,
+                                  width: 1.0,
+                                ),
+                                borderRadius:
+                                    BorderRadius.circular(FontList.font8),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                spacing: FontList.font2,
+                                children: [
+                                  Text(
+                                    'Panen Hari Ke - 1',
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                        fontSize: FontList.font20,
+                                        fontWeight: FontWeight.bold,
+                                        color: ColorList.blackColor),
+                                  ),
+                                  Text(
+                                    'Jangan lupa bawa nasi dan rokok untuk tukang panen',
+                                    maxLines: 2,
+                                    style: TextStyle(
+                                        fontSize: FontList.font14,
+                                        fontWeight: FontWeight.normal,
+                                        color: ColorList.blackColor),
+                                  ),
+                                  Text(
+                                    '10.00 WIB - 15.00 WIB',
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                        fontSize: FontList.font12,
+                                        fontWeight: FontWeight.bold,
+                                        color: ColorList.grayColor200),
+                                  ),
+                                ],
+                              ))),
+                    ],
+                  ),
+                ),
+                Gap(FontList.font16),
+                Text(
                   'Transaksi Terakhir',
                   style: GoogleFonts.inriaSans(
                       fontSize: FontList.font20,
@@ -182,7 +284,8 @@ class _BerandaPageState extends State<BerandaPage> {
                       ),
                     );
                   } else if (!state.isLoadingLoadLatestTransaction &&
-                      state.listLatestTransaction.isEmpty && state.isEmpty) {
+                      state.listLatestTransaction.isEmpty &&
+                      state.isEmpty) {
                     return Expanded(
                       child: Center(
                         child: Column(

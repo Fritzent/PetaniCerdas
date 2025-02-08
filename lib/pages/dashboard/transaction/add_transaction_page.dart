@@ -8,6 +8,7 @@ import 'package:petani_cerdas/widgets/custom_toast.dart';
 import 'package:petani_cerdas/widgets/custome_text_field_with_double_form.dart';
 import 'package:petani_cerdas/widgets/custome_text_field_with_title.dart';
 
+import '../../../repository/notification_service.dart';
 import '../../../resources/style_config.dart';
 import '../../../widgets/button_primary.dart';
 
@@ -24,10 +25,22 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   FocusNode nameFocusNode = FocusNode();
   FocusNode noteFocusNode = FocusNode();
   FocusNode dateFocusNode = FocusNode();
-  final nameBloc = AddTransactionsBloc();
-  final noteBloc = AddTransactionsBloc();
-  final dateBloc = AddTransactionsBloc();
-  final detailBloc = AddTransactionsBloc();
+  late NotificationService notificationService;
+  late AddTransactionsBloc nameBloc;
+  late AddTransactionsBloc noteBloc;
+  late AddTransactionsBloc dateBloc;
+  late AddTransactionsBloc detailBloc;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    notificationService = RepositoryProvider.of<NotificationService>(context);
+
+    nameBloc = AddTransactionsBloc(notificationService: notificationService);
+    noteBloc = AddTransactionsBloc(notificationService: notificationService);
+    dateBloc = AddTransactionsBloc(notificationService: notificationService);
+    detailBloc = AddTransactionsBloc(notificationService: notificationService);
+  }
 
   @override
   void dispose() {

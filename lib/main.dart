@@ -1,13 +1,17 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:petani_cerdas/bloc/session_check_bloc.dart';
 import 'package:petani_cerdas/pages/dashboard/dashboard_page.dart';
 import 'package:petani_cerdas/pages/dashboard/transaction/add_transaction_page.dart';
 import 'package:petani_cerdas/pages/pin/login_pin_page.dart';
+import 'package:petani_cerdas/repository/notification_service.dart';
 import 'package:petani_cerdas/resources/style_config.dart';
 import 'firebase_options.dart';
 import 'pages/auth/login_page.dart';
@@ -21,15 +25,44 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+  late AndroidInitializationSettings initializationSettingsAndroid;
+  late DarwinInitializationSettings iosSettings;
+
+  if (Platform.isAndroid) {
+    initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+  }
+  if (Platform.isIOS) {
+    iosSettings = DarwinInitializationSettings();
+  }
+
+  //Note : For IOS UnderDevelopment
+
+  final InitializationSettings initializationSettings = InitializationSettings(
+    android: initializationSettingsAndroid,
+    iOS: iosSettings
+  );
+
+  await flutterLocalNotificationsPlugin.initialize(
+    initializationSettings);
+
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]).then((value) {
-    runApp(const MainApp());
+    runApp(RepositoryProvider(
+        create: (context) => NotificationService(
+            flutterLocalNotificationsPlugin: flutterLocalNotificationsPlugin),
+        child: MainApp(
+          flutterLocalNotificationsPlugin: flutterLocalNotificationsPlugin,
+        )));
   });
 }
 
 class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+  const MainApp({super.key, required this.flutterLocalNotificationsPlugin});
 
   @override
   Widget build(BuildContext context) {
