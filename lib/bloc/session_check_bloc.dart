@@ -14,8 +14,6 @@ class SessionCheckBloc extends Bloc<SessionCheckEvent, SessionCheckState> {
 
   FutureOr<void> sessionCheck(event, emit) async {
     try {
-      // Dont forget to handling to check the user
-      //final user = await DSession.getUser();
       final FlutterSecureStorage secureStorage = FlutterSecureStorage();
       String? user = await secureStorage.read(key: 'login_user');
       if (user != null && user.isNotEmpty) {

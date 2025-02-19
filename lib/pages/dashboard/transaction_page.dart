@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 import 'package:petani_cerdas/bloc/transactions_bloc.dart';
 import 'package:petani_cerdas/resources/style_config.dart';
+import 'package:petani_cerdas/widgets/page_header.dart';
 import 'package:petani_cerdas/widgets/transactions_item.dart';
 
 import '../../widgets/custom_toast.dart';
@@ -63,7 +64,9 @@ class _TransactionPageState extends State<TransactionPage> {
         builder: (context, state) {
           if (state.isLoading) {
             return Center(child: CircularProgressIndicator());
-          } else if (!state.isLoading && state.groupedTransactions.isEmpty && state.isEmpty) {
+          } else if (!state.isLoading &&
+              state.groupedTransactions.isEmpty &&
+              state.isEmpty) {
             return Stack(children: [
               Center(
                 child: Column(
@@ -102,7 +105,7 @@ class _TransactionPageState extends State<TransactionPage> {
                 ),
               ),
               Positioned(
-                right: FontList.font24,
+                right: 0,
                 bottom: FontList.font105,
                 child: FloatingActionButton(
                   onPressed: () async {
@@ -139,32 +142,16 @@ class _TransactionPageState extends State<TransactionPage> {
                   mainAxisSize: MainAxisSize.min,
                   spacing: FontList.font20,
                   children: [
-                    Row(
-                      children: [
-                        Expanded(
-                            child: Text(
-                          'Transaksi',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: FontList.font32,
-                              color: ColorList.blackColor),
-                        )),
-                        if (state.groupedTransactions.isNotEmpty)
-                          GestureDetector(
-                            onTap: () {
-                              showCustomModalBottomSheet(
-                                context: context,
-                                bloc: context.read<TransactionsBloc>(),
-                              );
-                            },
-                            child: SvgPicture.asset(
-                              alignment: Alignment.topRight,
-                              'assets/icons/ic_filter.svg',
-                              height: FontList.font24,
-                              width: FontList.font24,
-                            ),
-                          ),
-                      ],
+                    PageHeader(
+                      pageTitle: 'Transaksi',
+                      hasRightIcon: state.groupedTransactions.isNotEmpty,
+                      rightIcon: 'assets/icons/ic_filter.svg',
+                      rightIconOnTap: () {
+                        showCustomModalBottomSheet(
+                          context: context,
+                          bloc: context.read<TransactionsBloc>(),
+                        );
+                      },
                     ),
                     Expanded(
                       child: ListView.builder(
@@ -207,7 +194,7 @@ class _TransactionPageState extends State<TransactionPage> {
                   ],
                 ),
                 Positioned(
-                  right: FontList.font24,
+                  right: 0,
                   bottom: FontList.font105,
                   child: FloatingActionButton(
                     onPressed: () async {

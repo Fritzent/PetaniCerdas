@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:petani_cerdas/bloc/session_check_bloc.dart';
 import 'package:petani_cerdas/pages/dashboard/dashboard_page.dart';
 import 'package:petani_cerdas/pages/dashboard/transaction/add_transaction_page.dart';
@@ -20,6 +21,7 @@ import 'pages/pin/otp_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: '.env');
+  await initializeDateFormatting('id_ID', null);
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

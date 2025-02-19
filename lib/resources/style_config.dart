@@ -50,6 +50,7 @@ class FontList {
   static const double font64 = 64.0;
   static const double font67 = 67.0;
   static const double font80 = 80.0;
+  static const double font86 = 86.0;
   static const double font100 = 100.0;
   static const double font105 = 105.0;
   static const double font167 = 167.0;
