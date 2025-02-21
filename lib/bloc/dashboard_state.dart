@@ -23,7 +23,7 @@ class DashboardState {
         todaySchedule = todaySchedule ??
             Schedule(
                 calendarId: '',
-                scheduleDate: '',
+                scheduleDate: DateTime.now(),
                 scheduleEndTime: DateTime.now(),
                 scheduleName: '',
                 scheduleNote: '',

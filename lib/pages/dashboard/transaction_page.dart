@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 import 'package:petani_cerdas/bloc/transactions_bloc.dart';
+import 'package:petani_cerdas/repository/user_service.dart';
 import 'package:petani_cerdas/resources/style_config.dart';
 import 'package:petani_cerdas/widgets/page_header.dart';
 import 'package:petani_cerdas/widgets/transactions_item.dart';
@@ -23,12 +24,21 @@ class TransactionPage extends StatefulWidget {
 class _TransactionPageState extends State<TransactionPage> {
   final ScrollController _scrollController = ScrollController();
   late TransactionsBloc bloc;
+  late UserService userService;
   Timer? _debounce;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    userService = RepositoryProvider.of<UserService>(context);
+
+    bloc = TransactionsBloc(userService: userService);
+  }
 
   @override
   void initState() {
     super.initState();
-    bloc = TransactionsBloc()..add(FetchTransaction());
+    //bloc = TransactionsBloc()..add(FetchTransaction());
     _scrollController.addListener(_onScroll);
   }
 
@@ -57,9 +67,9 @@ class _TransactionPageState extends State<TransactionPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: bloc,
-      //create: (context) => TransactionsBloc()..add(FetchTransaction()),
+    return BlocProvider(
+      //value: bloc,
+      create: (context) => bloc..add(FetchTransaction()),
       child: BlocBuilder<TransactionsBloc, TransactionsState>(
         builder: (context, state) {
           if (state.isLoading) {
@@ -184,6 +194,7 @@ class _TransactionPageState extends State<TransactionPage> {
                                         bottom: FontList.font16),
                                     child: TransactionsItem(
                                       transactions: transaction,
+                                      userService: userService,
                                     ),
                                   )),
                             ],

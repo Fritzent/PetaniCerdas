@@ -8,6 +8,7 @@ import 'package:petani_cerdas/bloc/auth_user_bloc.dart';
 import 'package:petani_cerdas/bloc/dashboard_bloc.dart';
 import 'package:petani_cerdas/widgets/transactions_item.dart';
 
+import '../../repository/user_service.dart';
 import '../../resources/style_config.dart';
 
 class BerandaPage extends StatefulWidget {
@@ -18,8 +19,15 @@ class BerandaPage extends StatefulWidget {
 }
 
 class _BerandaPageState extends State<BerandaPage> {
+  late UserService userService;
   Stream<DateTime> get timeStream =>
       Stream.periodic(Duration(seconds: 1), (_) => DateTime.now());
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    userService = RepositoryProvider.of<UserService>(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -334,7 +342,7 @@ class _BerandaPageState extends State<BerandaPage> {
                           return Padding(
                             padding:
                                 const EdgeInsets.only(bottom: FontList.font16),
-                            child: TransactionsItem(transactions: transaction),
+                            child: TransactionsItem(transactions: transaction, userService:  userService,),
                           );
                         })
                       ],

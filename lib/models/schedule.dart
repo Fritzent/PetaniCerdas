@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Schedule {
   final String calendarId;
-  final String scheduleDate;
+  final DateTime scheduleDate;
   final DateTime scheduleEndTime;
   final String scheduleName;
   final String scheduleNote;
@@ -34,7 +34,7 @@ class Schedule {
   factory Schedule.fromJson(Map<String, dynamic> json) {
     return Schedule (
       calendarId: json['kalendar_id'] as String,
-      scheduleDate: json['schedule_date'] as String,
+      scheduleDate: (json['schedule_date'] as Timestamp).toDate(),
       scheduleEndTime: (json['schedule_end_time'] as Timestamp).toDate(),
       scheduleName : json['schedule_name'] as String,
       scheduleNote : json['schedule_note'] as String,

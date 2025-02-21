@@ -11,6 +11,7 @@ import 'package:petani_cerdas/pages/dashboard/dashboard_page.dart';
 import 'package:petani_cerdas/pages/dashboard/transaction/add_transaction_page.dart';
 import 'package:petani_cerdas/pages/pin/login_pin_page.dart';
 import 'package:petani_cerdas/repository/notification_service.dart';
+import 'package:petani_cerdas/repository/user_service.dart';
 import 'package:petani_cerdas/resources/style_config.dart';
 import 'firebase_options.dart';
 import 'pages/auth/login_page.dart';
@@ -42,12 +43,23 @@ void main() async {
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]).then((value) {
-    runApp(RepositoryProvider(
-        create: (context) => NotificationService(
-            flutterLocalNotificationsPlugin: flutterLocalNotificationsPlugin),
+    runApp(
+      MultiRepositoryProvider(
+        providers: [
+          RepositoryProvider<NotificationService>(
+            create: (context) => NotificationService(
+              flutterLocalNotificationsPlugin: flutterLocalNotificationsPlugin,
+            ),
+          ),
+          RepositoryProvider<UserService>(
+            create: (context) => UserService(),
+          ),
+        ],
         child: MainApp(
           flutterLocalNotificationsPlugin: flutterLocalNotificationsPlugin,
-        )));
+        ),
+      ),
+    );
   });
 }
 

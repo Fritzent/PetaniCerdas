@@ -1,11 +1,10 @@
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:petani_cerdas/models/detail_transaction.dart';
+import 'package:petani_cerdas/repository/user_service.dart';
 import 'package:petani_cerdas/resources/bottomsheet_item.dart';
 import '../models/transaction.dart';
 
@@ -16,8 +15,9 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
   final FirebaseFirestore db = FirebaseFirestore.instance;
   final FirebaseAuth auth = FirebaseAuth.instance;
   StreamSubscription<QuerySnapshot>? _transactionSubscription;
+  final UserService userService;
 
-  TransactionsBloc() : super(TransactionsState()) {
+  TransactionsBloc({required this.userService}) : super(TransactionsState()) {
     on<FetchTransaction>(OnFetchTransactions);
     on<LoadMoreTransactions>(LoadMore);
     on<EmitTransactionData>(OnEmitData);
@@ -30,12 +30,6 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
 
     on<FetchDetailTransaction>(fetchDetailTransactions);
     on<EmitDetailTransactionData>(OnEmitDetailTransactionData);
-  }
-
-  Future<String> getData() async {
-    final FlutterSecureStorage secureStorage = FlutterSecureStorage();
-    final String? value = await secureStorage.read(key: 'login_user');
-    return value ?? '';
   }
 
   @override
@@ -87,7 +81,7 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
     }
     emit(state.copyWith(isLoadingLoadMore: true));
     try {
-      String userId = await getData();
+      String userId = await userService.getUserData();
 
       Query query = FirebaseFirestore.instance
           .collection('Transaction')
@@ -146,7 +140,7 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
       FetchTransaction event, Emitter<TransactionsState> emit) async {
     emit(state.copyWith(isLoading: true));
     try {
-      String userId = await getData();
+      String userId = await userService.getUserData();
 
       Query query = FirebaseFirestore.instance
           .collection('Transaction')
@@ -231,7 +225,7 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
     emit(TransactionsState(isLoading: true));
 
     try {
-      String userId = await getData();
+      String userId = await userService.getUserData();
       List<Transactions> data = List.empty();
       bool isDescending = true;
 
@@ -271,7 +265,7 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
   void OnSortByTotalTransaction(
       SortByTotalTransaction event, Emitter<TransactionsState> emit) async {
     try {
-      String userId = await getData();
+      String userId = await userService.getUserData();
       List<Transactions> data = List.empty();
       bool isDescending = true;
 
@@ -314,7 +308,7 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
 
   void OnSortByDate(SortByDate event, Emitter<TransactionsState> emit) async {
     try {
-      String userId = await getData();
+      String userId = await userService.getUserData();
       List<Transactions> data = List.empty();
 
       bool isDescending = true;
@@ -358,7 +352,7 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
 
   void OnSortByType(SortByType event, Emitter<TransactionsState> emit) async {
     try {
-      String userId = await getData();
+      String userId = await userService.getUserData();
       List<Transactions> data = List.empty();
 
       bool isDescending = true;

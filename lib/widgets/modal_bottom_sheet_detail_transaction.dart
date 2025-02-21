@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 import 'package:petani_cerdas/bloc/transactions_bloc.dart';
+import 'package:petani_cerdas/repository/user_service.dart';
 import 'package:petani_cerdas/resources/style_config.dart';
 import '../models/transaction.dart';
 
@@ -11,6 +12,7 @@ void showCustomModalBottomSheetDetailTransaction({
   required BuildContext context,
   bool isDismissible = false,
   bool enableDrag = false,
+  required UserService userService,
   required Transactions transaction,
 }) {
   showModalBottomSheet(
@@ -26,7 +28,7 @@ void showCustomModalBottomSheetDetailTransaction({
     ),
     builder: (context) {
       return BlocProvider(
-        create: (context) => TransactionsBloc()
+        create: (context) => TransactionsBloc(userService: userService)
           ..add(FetchDetailTransaction(transaction.transactionId)),
         child: BlocBuilder<TransactionsBloc, TransactionsState>(
           builder: (context, state) {

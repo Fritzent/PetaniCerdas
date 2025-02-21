@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 import 'package:petani_cerdas/models/transaction.dart';
+import 'package:petani_cerdas/repository/user_service.dart';
 import 'package:petani_cerdas/widgets/modal_bottom_sheet_detail_transaction.dart';
 import '../resources/style_config.dart';
 
 class TransactionsItem extends StatefulWidget {
   final Transactions transactions;
+  final UserService userService;
 
-  const TransactionsItem({super.key, required this.transactions});
+  const TransactionsItem({super.key, required this.transactions, required this.userService});
 
   @override
   State<TransactionsItem> createState() => _TransactionsItemState();
@@ -23,7 +25,8 @@ class _TransactionsItemState extends State<TransactionsItem> {
               context: context,
               isDismissible: false,
               enableDrag: false,
-              transaction: widget.transactions);
+              transaction: widget.transactions,
+              userService: widget.userService);
         },
         child: Container(
           padding: EdgeInsets.all(FontList.font8),
