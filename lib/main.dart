@@ -7,6 +7,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:petani_cerdas/bloc/session_check_bloc.dart';
+import 'package:petani_cerdas/pages/dashboard/calendar/add_calendar_page.dart';
 import 'package:petani_cerdas/pages/dashboard/dashboard_page.dart';
 import 'package:petani_cerdas/pages/dashboard/transaction/add_transaction_page.dart';
 import 'package:petani_cerdas/pages/pin/login_pin_page.dart';
@@ -104,6 +105,7 @@ class MainApp extends StatelessWidget {
           '/otp': (context) => OtpPage(),
           '/create_pin': (context) => CreatePinPage(),
           '/add_transaction': (context) => AddTransactionPage(),
+          '/add_calendar': (context) => AddCalendarPage(),
         },
       ),
     );

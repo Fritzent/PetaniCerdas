@@ -6,9 +6,9 @@ import 'package:intl/intl.dart';
 import 'package:petani_cerdas/bloc/calendar_bloc.dart';
 import 'package:petani_cerdas/widgets/page_header.dart';
 
-import '../../models/schedule.dart';
-import '../../repository/user_service.dart';
-import '../../resources/style_config.dart';
+import '../../../models/schedule.dart';
+import '../../../repository/user_service.dart';
+import '../../../resources/style_config.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
@@ -274,7 +274,9 @@ class _CalendarPageState extends State<CalendarPage> {
                     right: 0,
                     bottom: FontList.font105,
                     child: FloatingActionButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/add_calendar');
+                      },
                       tooltip: 'Tambah Jadwal',
                       backgroundColor: ColorList.primaryColor,
                       shape: StadiumBorder(),

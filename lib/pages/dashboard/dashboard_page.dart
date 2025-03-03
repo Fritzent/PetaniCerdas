@@ -9,9 +9,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:petani_cerdas/cubit/bottom_nav_cubit.dart';
 import 'package:petani_cerdas/pages/dashboard/beranda_page.dart';
-import 'package:petani_cerdas/pages/dashboard/calendar_page.dart';
+import 'package:petani_cerdas/pages/dashboard/calendar/calendar_page.dart';
 import 'package:petani_cerdas/pages/dashboard/settings_page.dart';
-import 'package:petani_cerdas/pages/dashboard/transaction_page.dart';
+import 'package:petani_cerdas/pages/dashboard/transaction/transaction_page.dart';
 import 'package:petani_cerdas/resources/style_config.dart';
 
 import '../../widgets/custom_toast.dart';

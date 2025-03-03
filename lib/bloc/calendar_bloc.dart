@@ -27,6 +27,11 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
 
     List<DateTime> updatedTimeSlots = List<DateTime>.from(state.timeSlots);
 
+    if (state.selectedDate.day != now.day) {
+      currentHour = 1;
+      updatedTimeSlots.clear();
+    }
+
     for (int hour = currentHour; hour <= 24; hour++) {
       updatedTimeSlots.add(DateTime(now.year, now.month, now.day, hour));
     }
@@ -50,6 +55,10 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
     emit(state.copyWith(
         selectedDate: event.dateTime, timeSlots: updatedTimeSlots));
 
+    if (event.dateTime.day != now.day) {
+      add(InitialCalendar());
+    }
+    
     add(FetchScheduleTask(event.dateTime));
   }
 

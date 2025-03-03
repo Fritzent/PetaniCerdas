@@ -11,6 +11,7 @@ import 'package:petani_cerdas/widgets/custome_text_field_with_title.dart';
 import '../../../repository/notification_service.dart';
 import '../../../resources/style_config.dart';
 import '../../../widgets/button_primary.dart';
+import '../../../widgets/page_header.dart';
 
 class AddTransactionPage extends StatefulWidget {
   const AddTransactionPage({super.key});
@@ -74,28 +75,13 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                       right: FontList.font24,
                       left: FontList.font24),
                   children: [
-                    Row(
-                      spacing: FontList.font16,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: SvgPicture.asset(
-                            alignment: Alignment.topRight,
-                            'assets/icons/ic_left.svg',
-                            height: FontList.font24,
-                            width: FontList.font24,
-                          ),
-                        ),
-                        Text(
-                          'Tambah Transaksi',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: FontList.font32,
-                              color: ColorList.blackColor),
-                        ),
-                      ],
+                    PageHeader(
+                      pageTitle: 'Tambah Transaksi',
+                      hasLeftIcon: true,
+                      leftIcon: 'assets/icons/ic_left.svg',
+                      leftIconOnTap: (){
+                        Navigator.pop(context);
+                      },
                     ),
                     Gap(FontList.font24),
                     Form(
@@ -220,9 +206,8 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(
-                            bottom: FontList.font24
-                          ),
+                          padding:
+                              const EdgeInsets.only(bottom: FontList.font24),
                           child: ButtonPrimary(
                             onTap: () {
                               if (nameBloc.state.isError) {
@@ -235,7 +220,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                               var dateValue = dateBloc.state.transactionDate;
                               var detailValue =
                                   detailBloc.state.listDetailTransaction;
-                          
+
                               detailBloc.add(OnSubmitAddTransactions(
                                   nameTransaction: nameValue,
                                   noteTransaction: noteValue,
