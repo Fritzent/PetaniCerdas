@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:petani_cerdas/bloc/general_custome_text_field_bloc.dart';
 import 'package:petani_cerdas/resources/style_config.dart';
+import 'package:flutter_datetime_picker_plus/src/datetime_picker_theme.dart'
+    as picker_theme;
 
 class CustomeTextFieldWithTitleCalendar extends StatefulWidget {
   final String textHint;
@@ -13,8 +16,8 @@ class CustomeTextFieldWithTitleCalendar extends StatefulWidget {
   final String? errorText;
   final bool isError;
   final String formSection;
-  final FocusNode focusNode;
   final bool isDateSection;
+  final bool isDateHourSection;
 
   const CustomeTextFieldWithTitleCalendar({
     super.key,
@@ -26,8 +29,8 @@ class CustomeTextFieldWithTitleCalendar extends StatefulWidget {
     this.errorText,
     this.isError = false,
     required this.formSection,
-    required this.focusNode,
     this.isDateSection = false,
+    this.isDateHourSection = false,
   });
 
   @override
@@ -44,7 +47,6 @@ class _CustomeTextFieldWithTitleStateCalendar
 
   @override
   void dispose() {
-    widget.focusNode.dispose();
     super.dispose();
   }
 
@@ -59,19 +61,20 @@ class _CustomeTextFieldWithTitleStateCalendar
         create: (context) => GeneralCustomeTextFieldBloc(),
         child: BlocBuilder<GeneralCustomeTextFieldBloc,
             GeneralCustomeTextFieldState>(builder: (context, state) {
+          var bloc = context.read<GeneralCustomeTextFieldBloc>();
           if (state.focusNode != null && !isFocusListenerAdded) {
             isFocusListenerAdded = true;
             state.focusNode?.addListener(() {
-              context
-                  .read<GeneralCustomeTextFieldBloc>()
-                  .add(OnFocusChange(state.focusNode!.hasFocus));
+              bloc.add(OnFocusChange(state.focusNode!.hasFocus));
             });
           }
 
-          if (state.controller != null && !isListenerAdded && state.focusNode!.hasFocus) {
+          if (state.controller != null &&
+              !isListenerAdded &&
+              state.focusNode!.hasFocus) {
             isListenerAdded = true;
             state.controller?.addListener(() {
-              context.read<GeneralCustomeTextFieldBloc>().add(OnTextChange(
+              bloc.add(OnTextChange(
                   state.controller!.text.isEmpty, state.controller!.text));
             });
           }
@@ -91,7 +94,6 @@ class _CustomeTextFieldWithTitleStateCalendar
               if (widget.isDateSection)
                 GestureDetector(
                   onTap: () async {
-                    state.focusNode!.requestFocus();
                     if (widget.isDateSection) {
                       DateTime? pickedDate = await showDatePicker(
                         context: context,
@@ -131,9 +133,10 @@ class _CustomeTextFieldWithTitleStateCalendar
 
                       if (pickedDate != null) {
                         String formattedDate =
-                            DateFormat("yyyy-MM-dd").format(pickedDate!);
+                            DateFormat("dd-MM-yyyy").format(pickedDate);
                         if (widget.onChanged != null) {
                           widget.onChanged!(formattedDate);
+                          bloc.add(OnUpdateField(formattedDate));
                         }
                       }
                     }
@@ -198,7 +201,85 @@ class _CustomeTextFieldWithTitleStateCalendar
                     ),
                   ),
                 ),
-              if (!widget.isDateSection)
+              if (widget.isDateHourSection)
+                GestureDetector(
+                  onTap: () async {
+                    DatePicker.showTimePicker(context,
+                        showSecondsColumn: false,
+                        theme: picker_theme.DatePickerTheme(
+                          doneStyle: TextStyle(color: ColorList.primaryColor, fontSize: FontList.font18),
+                          cancelStyle: TextStyle(color: ColorList.grayColor200, fontSize: FontList.font18),
+                          itemStyle: TextStyle(color: ColorList.blackColor, fontSize: FontList.font18),
+                        ),
+                        onConfirm: (time) {
+                      String formattedDate = DateFormat('HH:mm').format(time);
+                      if (widget.onChanged != null) {
+                        widget.onChanged!(formattedDate);
+                        bloc.add(OnUpdateField(formattedDate));
+                      }
+                    });
+                  },
+                  child: AbsorbPointer(
+                    child: TextFormField(
+                      keyboardType: widget.keypadType,
+                      focusNode: state.focusNode,
+                      controller: state.controller,
+                      onChanged: widget.onChanged,
+                      validator: widget.validator,
+                      style: TextStyle(
+                          color: ColorList.blackColor,
+                          fontSize: FontList.font18,
+                          fontWeight: FontWeight.bold),
+                      decoration: InputDecoration(
+                        hintText: widget.textHint,
+                        hintStyle: TextStyle(
+                            color: ColorList.grayColor200,
+                            fontSize: FontList.font18,
+                            fontWeight: FontWeight.normal),
+                        errorStyle: TextStyle(
+                            color: ColorList.redColor,
+                            fontSize: FontList.font16,
+                            fontWeight: FontWeight.normal),
+                        filled: true,
+                        fillColor: ColorList.whiteColor,
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(FontList.font8),
+                          borderSide: BorderSide(
+                            color: state.isFocused
+                                ? ColorList.primaryColor
+                                : ColorList.grayColor100,
+                            width: 1.0,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(FontList.font8),
+                          borderSide: BorderSide(
+                            color: ColorList.primaryColor,
+                            width: 1.0,
+                          ),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(FontList.font8),
+                          borderSide: BorderSide(
+                            color: ColorList.redColor,
+                            width: 1.0,
+                          ),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(FontList.font8),
+                          borderSide: BorderSide(
+                            color: ColorList.redColor,
+                            width: 1.0,
+                          ),
+                        ),
+                        errorText: state.errorMessage.isNotEmpty
+                            ? state.errorMessage
+                            : null,
+                      ),
+                    ),
+                  ),
+                ),
+              if (!widget.isDateSection && !widget.isDateHourSection)
                 GestureDetector(
                   onTap: () {
                     state.focusNode!.requestFocus();

@@ -156,10 +156,12 @@ class _CalendarPageState extends State<CalendarPage> {
                             itemBuilder: (context, index) {
                               String formattedTime = DateFormat('HH:mm a')
                                   .format(state.timeSlots[index]);
-
-                              List<Schedule> taskDetails =
-                                  state.groupedScheduleTasks[formattedTime] ??
-                                      [];
+                              DateTime dateIndex = state.timeSlots[index];
+                              List<Schedule> taskDetails = state.groupedScheduleTasks.entries
+                              .where((entry) => entry.value.any((e) => e.scheduleDate.day == dateIndex.day && e.scheduleDate.hour == dateIndex.hour))
+                              .map((entry) => entry.value)
+                              .expand((list) => list)
+                              .toList();
 
                               return Padding(
                                 padding: const EdgeInsets.symmetric(
@@ -207,8 +209,8 @@ class _CalendarPageState extends State<CalendarPage> {
                                                         width: double.infinity,
                                                         margin: EdgeInsets.only(
                                                             bottom: 4),
-                                                        padding:
-                                                            EdgeInsets.all(FontList.font8),
+                                                        padding: EdgeInsets.all(
+                                                            FontList.font8),
                                                         decoration:
                                                             BoxDecoration(
                                                           color: Colors.white,
@@ -236,7 +238,9 @@ class _CalendarPageState extends State<CalendarPage> {
                                                             Text(
                                                               task.scheduleName,
                                                               maxLines: 2,
-                                                              overflow: TextOverflow.ellipsis,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
                                                               style: TextStyle(
                                                                   fontSize: 20,
                                                                   fontWeight:
