@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:petani_cerdas/bloc/add_calendar_bloc.dart';
+import 'package:petani_cerdas/bloc/general_custome_text_field_bloc.dart';
 import 'package:petani_cerdas/resources/style_config.dart';
 
 class CustomeTextFieldWithTitleCalendar extends StatefulWidget {
@@ -13,8 +13,6 @@ class CustomeTextFieldWithTitleCalendar extends StatefulWidget {
   final String? errorText;
   final bool isError;
   final String formSection;
-  final AddCalendarBloc textFieldBloc;
-  final TextEditingController controller;
   final FocusNode focusNode;
   final bool isDateSection;
 
@@ -28,8 +26,6 @@ class CustomeTextFieldWithTitleCalendar extends StatefulWidget {
     this.errorText,
     this.isError = false,
     required this.formSection,
-    required this.textFieldBloc,
-    required this.controller,
     required this.focusNode,
     this.isDateSection = false,
   });
@@ -39,14 +35,16 @@ class CustomeTextFieldWithTitleCalendar extends StatefulWidget {
       _CustomeTextFieldWithTitleStateCalendar();
 }
 
-class _CustomeTextFieldWithTitleStateCalendar extends State<CustomeTextFieldWithTitleCalendar> {
+class _CustomeTextFieldWithTitleStateCalendar
+    extends State<CustomeTextFieldWithTitleCalendar> {
   bool isFocused = false;
   bool isEmpty = true;
+  bool isListenerAdded = false;
+  bool isFocusListenerAdded = false;
 
   @override
   void dispose() {
     widget.focusNode.dispose();
-    widget.controller.dispose();
     super.dispose();
   }
 
@@ -57,20 +55,26 @@ class _CustomeTextFieldWithTitleStateCalendar extends State<CustomeTextFieldWith
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AddCalendarBloc, AddCalendarState>(
-        bloc: widget.textFieldBloc,
-        builder: (context, state) {
-          if (state.focusNode != null) {
+    return BlocProvider(
+        create: (context) => GeneralCustomeTextFieldBloc(),
+        child: BlocBuilder<GeneralCustomeTextFieldBloc,
+            GeneralCustomeTextFieldState>(builder: (context, state) {
+          if (state.focusNode != null && !isFocusListenerAdded) {
+            isFocusListenerAdded = true;
             state.focusNode?.addListener(() {
-              // widget.textFieldBloc
-              //     .add(OnFocusChange(state.focusNode!.hasFocus));
+              context
+                  .read<GeneralCustomeTextFieldBloc>()
+                  .add(OnFocusChange(state.focusNode!.hasFocus));
             });
           }
 
-          state.controller.addListener(() {
-            // widget.textFieldBloc
-            //     .add(OnTextChange(state.controller.text.isEmpty));
-          });
+          if (state.controller != null && !isListenerAdded && state.focusNode!.hasFocus) {
+            isListenerAdded = true;
+            state.controller?.addListener(() {
+              context.read<GeneralCustomeTextFieldBloc>().add(OnTextChange(
+                  state.controller!.text.isEmpty, state.controller!.text));
+            });
+          }
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,6 +91,7 @@ class _CustomeTextFieldWithTitleStateCalendar extends State<CustomeTextFieldWith
               if (widget.isDateSection)
                 GestureDetector(
                   onTap: () async {
+                    state.focusNode!.requestFocus();
                     if (widget.isDateSection) {
                       DateTime? pickedDate = await showDatePicker(
                         context: context,
@@ -124,18 +129,20 @@ class _CustomeTextFieldWithTitleStateCalendar extends State<CustomeTextFieldWith
                         },
                       );
 
-                      String formattedDate =
-                          DateFormat("yyyy-MM-dd").format(pickedDate!);
-                      if (widget.onChanged != null) {
-                        widget.onChanged!(formattedDate);
+                      if (pickedDate != null) {
+                        String formattedDate =
+                            DateFormat("yyyy-MM-dd").format(pickedDate!);
+                        if (widget.onChanged != null) {
+                          widget.onChanged!(formattedDate);
+                        }
                       }
                     }
                   },
                   child: AbsorbPointer(
                     child: TextFormField(
                       keyboardType: widget.keypadType,
-                      controller: state.controller,
                       focusNode: state.focusNode,
+                      controller: state.controller,
                       onChanged: widget.onChanged,
                       validator: widget.validator,
                       style: TextStyle(
@@ -184,19 +191,22 @@ class _CustomeTextFieldWithTitleStateCalendar extends State<CustomeTextFieldWith
                             width: 1.0,
                           ),
                         ),
-                        errorText:
-                            state.errorText.isNotEmpty ? state.errorText : null,
+                        errorText: state.errorMessage.isNotEmpty
+                            ? state.errorMessage
+                            : null,
                       ),
                     ),
                   ),
                 ),
               if (!widget.isDateSection)
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    state.focusNode!.requestFocus();
+                  },
                   child: TextFormField(
                     keyboardType: widget.keypadType,
-                    controller: state.controller,
                     focusNode: state.focusNode,
+                    controller: state.controller,
                     onChanged: widget.onChanged,
                     validator: widget.validator,
                     style: TextStyle(
@@ -245,13 +255,14 @@ class _CustomeTextFieldWithTitleStateCalendar extends State<CustomeTextFieldWith
                           width: 1.0,
                         ),
                       ),
-                      errorText:
-                          state.errorText.isNotEmpty ? state.errorText : null,
+                      errorText: state.errorMessage.isNotEmpty
+                          ? state.errorMessage
+                          : null,
                     ),
                   ),
                 )
             ],
           );
-        });
+        }));
   }
 }

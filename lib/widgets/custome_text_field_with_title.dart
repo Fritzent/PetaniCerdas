@@ -124,10 +124,12 @@ class _CustomeTextFieldWithTitleState extends State<CustomeTextFieldWithTitle> {
                         },
                       );
 
-                      String formattedDate =
-                          DateFormat("yyyy-MM-dd").format(pickedDate!);
-                      if (widget.onChanged != null) {
-                        widget.onChanged!(formattedDate);
+                      if (pickedDate != null) {
+                        String formattedDate =
+                            DateFormat("yyyy-MM-dd").format(pickedDate!);
+                        if (widget.onChanged != null) {
+                          widget.onChanged!(formattedDate);
+                        }
                       }
                     }
                   },

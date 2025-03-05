@@ -5,7 +5,5 @@ part 'add_calendar_event.dart';
 part 'add_calendar_state.dart';
 
 class AddCalendarBloc extends Bloc<AddCalendarEvent, AddCalendarState> {
-  AddCalendarBloc() : super(AddCalendarState()) {
-    
-  }
+  AddCalendarBloc() : super(AddCalendarState());
 }
